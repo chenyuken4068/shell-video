@@ -1,10 +1,19 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../theme/app_theme.dart';
 
-/// 远端最新版本（暂无更新服务器：留空表示与当前版本一致 → 显示「已是最新」）
-/// 以后接入服务器时，把这里改成拉取到的版本号即可自动切换成「有新版本」状态。
+/// 远程更新清单地址（GitHub 仓库根目录的 version.json）
+///
+/// ⚠️ 把下面的「你的用户名 / shell-video」换成你的 GitHub 用户名和仓库名
+const String kVersionJsonUrl =
+    'https://raw.githubusercontent.com/你的用户名/shell-video/main/version.json';
+
+/// 兜底：远程清单拉取失败时视为已是最新（留空 = 不提示更新）
 const String kRemoteLatestVersion = '';
 
 /// 版本更新页（二级页面）：参考 ColorOS / HyperOS 更新页
@@ -22,6 +31,9 @@ class _UpdateScreenState extends State<UpdateScreen> {
   String _build = '';
   String _latest = '';
   String _lastCheck = '';
+  String _apkUrl = '';
+  String _size = '';
+  List<(String, String)> _remoteNotes = const [];
 
   /// 当前版本更新内容（内置 changelog：新增 / 优化 / 修复）
   static const List<(String, String)> _changelog = [
@@ -43,10 +55,15 @@ class _UpdateScreenState extends State<UpdateScreen> {
     _check();
   }
 
+  void _toast(String msg) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(msg), behavior: SnackBarBehavior.floating),
+    );
+  }
+
   Future<void> _check() async {
     setState(() => _checking = true);
-    // 模拟网络检查（约 0.7s）
-    await Future<void>.delayed(const Duration(milliseconds: 700));
     String cur = '-';
     String build = '-';
     try {
@@ -54,11 +71,43 @@ class _UpdateScreenState extends State<UpdateScreen> {
       cur = info.version;
       build = info.buildNumber;
     } catch (_) {}
+    // 拉取 GitHub 上的 version.json（失败则视为已是最新）
+    String latest = kRemoteLatestVersion.isEmpty ? cur : kRemoteLatestVersion;
+    String apkUrl = '';
+    String size = '';
+    List<(String, String)> notes = const [];
+    try {
+      final client = HttpClient()
+        ..connectionTimeout = const Duration(seconds: 8);
+      final req = await client.getUrl(Uri.parse(kVersionJsonUrl));
+      final res = await req.close();
+      if (res.statusCode == 200) {
+        final body = await res.transform(utf8.decoder).join();
+        final j = jsonDecode(body) as Map<String, dynamic>;
+        latest = (j['version'] as String?)?.trim().isNotEmpty == true
+            ? j['version'] as String
+            : latest;
+        apkUrl = (j['apkUrl'] as String?) ?? '';
+        size = (j['size'] as String?) ?? '';
+        final raw = j['notes'];
+        if (raw is List) {
+          notes = raw
+              .whereType<List>()
+              .where((e) => e.length >= 2)
+              .map((e) => (e[0].toString(), e[1].toString()))
+              .toList();
+        }
+      }
+      client.close();
+    } catch (_) {/* 网络失败：静默，按已是最新处理 */}
     if (!mounted) return;
     setState(() {
       _current = cur;
       _build = build;
-      _latest = kRemoteLatestVersion.isEmpty ? cur : kRemoteLatestVersion;
+      _latest = latest;
+      _apkUrl = apkUrl;
+      _size = size;
+      _remoteNotes = notes;
       _lastCheck = '刚刚';
       _checking = false;
     });
@@ -208,6 +257,9 @@ class _UpdateScreenState extends State<UpdateScreen> {
     );
   }
 
+  List<(String, String)> get _notes =>
+      _remoteNotes.isNotEmpty ? _remoteNotes : _changelog;
+
   Widget _changelogCard() {
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
@@ -224,9 +276,9 @@ class _UpdateScreenState extends State<UpdateScreen> {
               style:
                   const TextStyle(fontSize: 13, fontWeight: FontWeight.w800)),
           const SizedBox(height: 11),
-          for (int i = 0; i < _changelog.length; i++)
+          for (int i = 0; i < _notes.length; i++)
             Padding(
-              padding: EdgeInsets.only(bottom: i == _changelog.length - 1 ? 0 : 8),
+              padding: EdgeInsets.only(bottom: i == _notes.length - 1 ? 0 : 8),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -250,12 +302,12 @@ class _UpdateScreenState extends State<UpdateScreen> {
                         ),
                         children: [
                           TextSpan(
-                            text: '${_changelog[i].$1} ',
+                            text: '${_notes[i].$1} ',
                             style: const TextStyle(
                                 fontWeight: FontWeight.w800,
                                 color: AppColors.accent),
                           ),
-                          TextSpan(text: _changelog[i].$2),
+                          TextSpan(text: _notes[i].$2),
                         ],
                       ),
                     ),
@@ -314,13 +366,17 @@ class _UpdateScreenState extends State<UpdateScreen> {
         padding: const EdgeInsets.fromLTRB(16, 6, 16, 18),
         child: GestureDetector(
           onTap: has
-              ? () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('请前往应用商店更新到 $_latest'),
-                      behavior: SnackBarBehavior.floating,
-                    ),
-                  );
+              ? () async {
+                  final url = _apkUrl.isNotEmpty
+                      ? _apkUrl
+                      : 'https://github.com/你的用户名/shell-video/releases/latest';
+                  try {
+                    final ok = await launchUrl(Uri.parse(url),
+                        mode: LaunchMode.externalApplication);
+                    if (!ok && mounted) _toast('无法打开下载链接');
+                  } catch (e) {
+                    if (mounted) _toast('打开链接失败: $e');
+                  }
                 }
               : _check,
           child: Container(

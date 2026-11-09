@@ -18,6 +18,7 @@ dependencies:
   ffmpeg_kit_flutter_video: ^6.0.3
   # 鏂囦欢閫夋嫨
   file_picker: ^10.3.3
+  url_launcher: ^6.3.1
   # 搴旂敤鐩綍
   path_provider: ^2.1.5
   # 鍒嗕韩瀵煎嚭
