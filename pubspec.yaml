@@ -1,0 +1,55 @@
+name: shell_video_app
+description: "鎵嬫満澹宠棰戝悎鎴愬伐鍏?- 甯﹀３瑙嗛/鎴浘鍒朵綔"
+publish_to: 'none'
+
+version: 3.3.0+27
+
+environment:
+  sdk: ^3.13.3
+
+dependencies:
+  flutter:
+    sdk: flutter
+  video_player: ^2.8.2
+  gal: ^2.3.0
+
+  cupertino_icons: ^1.0.8
+  # FFmpeg 鍐呮牳锛坴ideo 鐗堬紝鍚?MediaCodec 纭欢鍔犻€燂級
+  ffmpeg_kit_flutter_video: ^6.0.3
+  # 鏂囦欢閫夋嫨
+  file_picker: ^10.3.3
+  # 搴旂敤鐩綍
+  path_provider: ^2.1.5
+  # 鍒嗕韩瀵煎嚭
+  share_plus: ^11.0.0
+  # 鍥剧墖澶勭悊锛堝渾瑙掗伄缃╃敓鎴愶級
+  image: ^4.5.4
+  # 妯℃澘鍒嗕韩鍖咃紙.shtpl = zip锛?
+  archive: ^4.0.0
+  # 璺緞宸ュ叿
+  path: ^1.9.0
+  package_info_plus: ^9.0.1
+  flutter_liquid_glass_kit: ^2.0.0
+  flutter_colorpicker: ^1.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  path_provider_platform_interface: ^2.1.2
+
+# ffmpeg_kit_flutter_video 宸插仠姝㈢淮鎶わ紝浣跨敤鏈湴鎵撹繃琛ヤ竵鐨勫壇鏈?
+# 锛堢Щ闄ゅ凡搴熷純鐨?Flutter v1 娉ㄥ唽 API锛屽吋瀹规柊鐗堟湰 Flutter锛?
+dependency_overrides:
+  ffmpeg_kit_flutter_video:
+    path: third_party/ffmpeg_kit_flutter_video
+
+flutter:
+  shaders:
+    - assets/shaders/liquid_glass.frag
+  uses-material-design: true
+
+  assets:
+    - assets/templates/
+    - assets/splash/
+    - assets/creators/

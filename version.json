@@ -1,0 +1,17 @@
+{
+  "version": "3.3.0",
+  "build": "330",
+  "apkUrl": "https://github.com/你的用户名/shell-video/releases/latest/download/ShellVideo_3.3.0.apk",
+  "releaseUrl": "https://github.com/你的用户名/shell-video/releases/latest",
+  "size": "145.8 MB",
+  "date": "2026-11-09",
+  "notes": [
+    ["新增", "多颜色模板（OPPO / vivo 共 33 色）"],
+    ["新增", "背景自动取色 + 0~100 高斯模糊"],
+    ["新增", "实况照片预览播放"],
+    ["新增", "图库批量选择（长按触发）"],
+    ["优化", "屏幕框标定算法（贴合更准）"],
+    ["优化", "比例切换改为同画布连续缩放"],
+    ["修复", "若干细节问题"]
+  ]
+}

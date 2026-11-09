@@ -1,0 +1,12 @@
+// Used by the one-click build script.
+// Disables tasks that crash when Gradle spawns child processes:
+//   1) compileFlutterBuildRelease -> already done by `flutter assemble`
+//   2) jni buildCMake/configureCMake -> native libs already built by ninja
+gradle.allprojects {
+    tasks.configureEach { t ->
+        def n = t.name
+        if (n == "compileFlutterBuildRelease" || n.contains("buildCMake") || n.contains("configureCMake")) {
+            t.onlyIf { false }
+        }
+    }
+}
