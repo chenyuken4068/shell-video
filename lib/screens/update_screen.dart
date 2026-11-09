@@ -9,9 +9,9 @@ import '../theme/app_theme.dart';
 
 /// 远程更新清单地址（GitHub 仓库根目录的 version.json）
 ///
-/// ⚠️ 把下面的「你的用户名 / shell-video」换成你的 GitHub 用户名和仓库名
+/// ⚠️ 把下面的「chenyuken4068 / shell-video」换成你的 GitHub 用户名和仓库名
 const String kVersionJsonUrl =
-    'https://raw.githubusercontent.com/你的用户名/shell-video/main/version.json';
+    'https://raw.githubusercontent.com/chenyuken4068/shell-video/main/version.json';
 
 /// 兜底：远程清单拉取失败时视为已是最新（留空 = 不提示更新）
 const String kRemoteLatestVersion = '';
@@ -369,7 +369,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
               ? () async {
                   final url = _apkUrl.isNotEmpty
                       ? _apkUrl
-                      : 'https://github.com/你的用户名/shell-video/releases/latest';
+                      : 'https://github.com/chenyuken4068/shell-video/releases/latest';
                   try {
                     final ok = await launchUrl(Uri.parse(url),
                         mode: LaunchMode.externalApplication);
