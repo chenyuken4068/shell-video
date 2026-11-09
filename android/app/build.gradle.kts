@@ -33,7 +33,10 @@ android {
 
         // 只打包主流手机架构，显著减小 APK 体积
         ndk {
-            abiFilters += listOf("arm64-v8a", "armeabi-v7a")
+            // 仅保留 64 位 ARM（2020 年后手机全部支持）：
+            // 去掉 x86_64（模拟器）+ armeabi-v7a（32 位），APK 约缩小 84MB
+            abiFilters.clear()
+            abiFilters.addAll(listOf("arm64-v8a"))
         }
     }
 
