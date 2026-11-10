@@ -1017,8 +1017,12 @@ class _ComposeScreenState extends State<ComposeScreen>
     final key = [
       _imagePath ?? '',
       bgImagePath ?? '',
+      bgFromContent ? (bgContentPath ?? '') : '',
       _bgMirror.toString(),
       bgColor.toARGB32().toString(),
+      // 模糊开关 / 强度必须参与缓存 key，否则滑杆调节后预览不刷新
+      bgBlurOn.toString(),
+      bgBlurSigma.toStringAsFixed(1),
     ].join('|');
     if (_longFuture == null || key != _longKey) {
       _longKey = key;
@@ -1818,17 +1822,25 @@ class _ComposeScreenState extends State<ComposeScreen>
 
   // ── 底栏形态 ③：完成（左导出 + 右三圆）──
   Widget _buildDoneBar() {
+    // 图片创作（含长截图）导出图片，视频/实况导出视频 —— 不能一律显示「导出带壳视频」
+    final isImg = widget.imageMode;
     return Row(
       key: const ValueKey('done'),
       children: [
         Expanded(
           child: _ActionBtn(
-            icon: widget.mode == ComposeMode.live
-                ? Icons.motion_photos_on_outlined
-                : Icons.movie_outlined,
-            label: widget.mode == ComposeMode.live ? '导出动态照片' : '导出带壳视频',
+            icon: isImg
+                ? Icons.image_outlined
+                : (widget.mode == ComposeMode.live
+                    ? Icons.motion_photos_on_outlined
+                    : Icons.movie_outlined),
+            label: isImg
+                ? (_longMode ? '导出带壳长图' : '导出带壳图片')
+                : (widget.mode == ComposeMode.live
+                    ? '导出动态照片'
+                    : '导出带壳视频'),
             enabled: true,
-            onTap: _exportVideo,
+            onTap: isImg ? _exportImage : _exportVideo,
             primary: true,
           ),
         ),
