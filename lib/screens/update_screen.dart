@@ -5,13 +5,36 @@ import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../services/app_log.dart';
 import '../theme/app_theme.dart';
 
-/// 远程更新清单地址（GitHub 仓库根目录的 version.json）
+/// 远程更新清单地址（多源容错，国内网络自动降级）
 ///
-/// ⚠️ 把下面的「chenyuken4068 / shell-video」换成你的 GitHub 用户名和仓库名
+/// 说明：raw.githubusercontent.com / github.com 在国内经常超时，
+/// 这里按「国内可达性」排序依次尝试：
+///   ① api.github.com（内容 API，最稳）
+///   ② gcore.jsdelivr.net（CDN 镜像）
+///   ③ fastly.jsdelivr.net（CDN 备用）
+///   ④ raw.githubusercontent.com（直连，海外/兜底）
+const String kGithubOwner = 'chenyuken4068';
+const String kGithubRepo = 'shell-video';
 const String kVersionJsonUrl =
     'https://raw.githubusercontent.com/chenyuken4068/shell-video/main/version.json';
+
+/// APK 下载代理（GitHub 直链在国内不可达时自动走这里）
+const String kApkProxy = 'https://gh-proxy.com/';
+
+String _apiContentsUrl() =>
+    'https://api.github.com/repos/$kGithubOwner/$kGithubRepo/contents/version.json';
+String _jsdelivrUrl(String host) =>
+    'https://$host/gh/$kGithubOwner/$kGithubRepo@main/version.json';
+
+/// 把 github.com 链接转成可用的代理链接（国内网络用）
+String proxiedUrl(String url) {
+  if (!url.contains('github.com')) return url;
+  if (url.startsWith(kApkProxy)) return url;
+  return kApkProxy + url;
+}
 
 /// 兜底：远程清单拉取失败时视为已是最新（留空 = 不提示更新）
 const String kRemoteLatestVersion = '';
@@ -34,6 +57,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
   String _apkUrl = '';
   String _size = '';
   List<(String, String)> _remoteNotes = const [];
+  bool _netError = false;
 
   /// 当前版本更新内容（内置 changelog：新增 / 优化 / 修复）
   static const List<(String, String)> _changelog = [
@@ -55,6 +79,78 @@ class _UpdateScreenState extends State<UpdateScreen> {
     _check();
   }
 
+  String _lastSource = '';
+
+  /// 依次尝试多个源拉取版本清单；全部失败返回 null
+  Future<Map<String, dynamic>?> _fetchManifest() async {
+    // ① GitHub 内容 API（国内可达，返回 base64 内容）
+    try {
+      final body = await _get(_apiContentsUrl(), headers: {
+        'Accept': 'application/vnd.github+json',
+        'User-Agent': 'ShellVideoApp',
+      });
+      if (body != null) {
+        final j = jsonDecode(body) as Map<String, dynamic>;
+        if (j['content'] is String) {
+          final b64 = (j['content'] as String).replaceAll(RegExp(r"\s"), "");
+          final txt = utf8.decode(base64Decode(b64));
+          final m = jsonDecode(txt);
+          if (m is Map<String, dynamic>) {
+            _lastSource = 'api.github.com';
+            return m;
+          }
+        }
+      }
+    } catch (e) {
+      AppLog.i('api.github.com 失败: $e');
+    }
+    // ② jsDelivr CDN 镜像
+    for (final host in const ['gcore.jsdelivr.net', 'fastly.jsdelivr.net']) {
+      try {
+        final body = await _get(_jsdelivrUrl(host));
+        if (body != null) {
+          final m = jsonDecode(body);
+          if (m is Map<String, dynamic>) {
+            _lastSource = host;
+            return m;
+          }
+        }
+      } catch (e) {
+        AppLog.i('$host 失败: $e');
+      }
+    }
+    // ③ raw 直连（海外兜底）
+    try {
+      final body = await _get(kVersionJsonUrl);
+      if (body != null) {
+        final m = jsonDecode(body);
+        if (m is Map<String, dynamic>) {
+          _lastSource = 'raw';
+          return m;
+        }
+      }
+    } catch (e) {
+      AppLog.i('raw 失败: $e');
+    }
+    return null;
+  }
+
+  Future<String?> _get(String url, {Map<String, String>? headers}) async {
+    final client = HttpClient()
+      ..connectionTimeout = const Duration(seconds: 6);
+    try {
+      final req = await client.getUrl(Uri.parse(url));
+      req.headers.set('User-Agent', 'ShellVideoApp');
+      headers?.forEach((k, v) => req.headers.set(k, v));
+      final res = await req.close().timeout(const Duration(seconds: 10));
+      if (res.statusCode != 200) return null;
+      return await res.transform(utf8.decoder).join();
+    } finally {
+      client.close();
+    }
+  }
+
+
   void _toast(String msg) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
@@ -63,6 +159,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
   }
 
   Future<void> _check() async {
+    _netError = false; // 每次检查前复位，避免上次失败一直显示「网络不可用」
     setState(() => _checking = true);
     String cur = '-';
     String build = '-';
@@ -76,30 +173,26 @@ class _UpdateScreenState extends State<UpdateScreen> {
     String apkUrl = '';
     String size = '';
     List<(String, String)> notes = const [];
-    try {
-      final client = HttpClient()
-        ..connectionTimeout = const Duration(seconds: 8);
-      final req = await client.getUrl(Uri.parse(kVersionJsonUrl));
-      final res = await req.close();
-      if (res.statusCode == 200) {
-        final body = await res.transform(utf8.decoder).join();
-        final j = jsonDecode(body) as Map<String, dynamic>;
-        latest = (j['version'] as String?)?.trim().isNotEmpty == true
-            ? j['version'] as String
-            : latest;
-        apkUrl = (j['apkUrl'] as String?) ?? '';
-        size = (j['size'] as String?) ?? '';
-        final raw = j['notes'];
-        if (raw is List) {
-          notes = raw
-              .whereType<List>()
-              .where((e) => e.length >= 2)
-              .map((e) => (e[0].toString(), e[1].toString()))
-              .toList();
-        }
+    final m = await _fetchManifest();
+    if (m != null) {
+      latest = (m['version'] as String?)?.trim().isNotEmpty == true
+          ? m['version'] as String
+          : latest;
+      apkUrl = (m['apkUrl'] as String?) ?? '';
+      size = (m['size'] as String?) ?? '';
+      final raw = m['notes'];
+      if (raw is List) {
+        notes = raw
+            .whereType<List>()
+            .where((e) => e.length >= 2)
+            .map((e) => (e[0].toString(), e[1].toString()))
+            .toList();
       }
-      client.close();
-    } catch (_) {/* 网络失败：静默，按已是最新处理 */}
+      AppLog.i('更新检查: 命中源=$_lastSource 版本=$latest');
+    } else {
+      AppLog.i('更新检查失败: 所有源都不可达');
+      _netError = true;
+    }
     if (!mounted) return;
     setState(() {
       _current = cur;
@@ -108,8 +201,9 @@ class _UpdateScreenState extends State<UpdateScreen> {
       _apkUrl = apkUrl;
       _size = size;
       _remoteNotes = notes;
-      _lastCheck = '刚刚';
+      _lastCheck = _netError ? '网络不可用' : '刚刚';
       _checking = false;
+      AppLog.i('更新检查: 当前=$cur 远程=$latest 网络错误=$_netError');
     });
   }
 
@@ -368,8 +462,9 @@ class _UpdateScreenState extends State<UpdateScreen> {
           onTap: has
               ? () async {
                   final url = _apkUrl.isNotEmpty
-                      ? _apkUrl
-                      : 'https://github.com/chenyuken4068/shell-video/releases/latest';
+                      ? proxiedUrl(_apkUrl)
+                      : proxiedUrl(
+                          'https://github.com/chenyuken4068/shell-video/releases/latest');
                   try {
                     final ok = await launchUrl(Uri.parse(url),
                         mode: LaunchMode.externalApplication);

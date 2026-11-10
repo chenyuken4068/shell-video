@@ -233,14 +233,34 @@ class _LiveTrimScreenState extends State<LiveTrimScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.bg,
+      // 顶栏：玻璃返回钮 + 标题（与合成台 / 模板库一致）
       appBar: AppBar(
         backgroundColor: AppColors.bg,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
+        scrolledUnderElevation: 0,
         centerTitle: false,
+        leadingWidth: 52,
+        titleSpacing: 0,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 12),
+          child: GestureDetector(
+            onTap: () => Navigator.pop(context),
+            child: Container(
+              width: 34,
+              height: 34,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: AppColors.fill,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(Icons.chevron_left, size: 18, color: AppColors.text),
+            ),
+          ),
+        ),
         title: const Text(
           '选帧与裁切',
-          style: TextStyle(fontSize: 21, fontWeight: FontWeight.w900),
+          style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
         ),
       ),
       body: _err != null

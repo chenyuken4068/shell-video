@@ -8,6 +8,7 @@ import '../theme/app_theme.dart';
 import 'dart:ui' show ImageFilter;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -22,7 +23,7 @@ import '../services/template_store.dart';
 import '../widgets/glass_preview_tile.dart';
 
 import '../widgets/main_shell.dart'
-    show gTplHidden, gTab, gNavGlass, gNavGlassOpacity, gThemeMode;
+    show gTplGroups, gTplHidden, gTab, gNavGlass, gNavGlassOpacity, gThemeMode;
 
 import 'tpl_library_screen.dart';
 
@@ -353,7 +354,7 @@ class _MeScreenState extends State<MeScreen> {
           _creatorRow(
             asset: 'assets/creators/tpl.png',
             name: '酷安@SOCMTK9300',
-            role: '模板库提供',
+            role: '模板提供',
           ),
         ],
       ),
@@ -1721,9 +1722,57 @@ class _SettingsHeader extends StatelessWidget {
 }
 
 /// 二级页面：设置（分组列表）
-class _SettingsScreen extends StatelessWidget {
+class _SettingsScreen extends StatefulWidget {
   final AppSettings initial;
   const _SettingsScreen({required this.initial});
+
+  @override
+  State<_SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<_SettingsScreen> {
+  late AppSettings _s = widget.initial;
+
+  AppSettings _copy({
+    bool? autoPickBg,
+    bool? autoSaveBg,
+    bool? bootAnim,
+    String? themeMode,
+  }) =>
+      AppSettings(
+        background: _s.background,
+        quality: _s.quality,
+        hardware: _s.hardware,
+        fps: _s.fps,
+        autoSaveBg: autoSaveBg ?? _s.autoSaveBg,
+        autoPickBg: autoPickBg ?? _s.autoPickBg,
+        bootAnim: bootAnim ?? _s.bootAnim,
+        navGlass: _s.navGlass,
+        navGlassOpacity: _s.navGlassOpacity,
+        themeMode: themeMode ?? _s.themeMode,
+        tplGroups: _s.tplGroups,
+        tplHidden: _s.tplHidden,
+        homeOrder: _s.homeOrder,
+        homeHidden: _s.homeHidden,
+      );
+
+  Future<void> _save() async {
+    await SettingsStore().save(_s);
+    gAutoPickBg.value = _s.autoPickBg;
+    gThemeMode.value = AppTheme.parse(_s.themeMode);
+  }
+
+  Future<void> _pickThemeMode() async {
+    final r = await Navigator.push<String>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => _ThemeModePage(initial: _s.themeMode),
+      ),
+    );
+    if (r == null || !mounted) return;
+    setState(() => _s = _copy(themeMode: r));
+    await _save();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -1736,47 +1785,69 @@ class _SettingsScreen extends StatelessWidget {
             child: ListView(
               padding: const EdgeInsets.fromLTRB(14, 4, 14, 30),
               children: [
-                _setGroupTitle('创作与导出'),
-                _setCard([
-                  _setRow(Icons.ios_share_outlined, '导出默认设置',
-                      '${initial.qualityLabel} · ${initial.hardwareLabel}', () {
-                    _pushAndSave(
-                      context,
-                      _ExportSettingsPage(initial: initial),
-                    );
-                  }),
-                  _setRow(Icons.sort_outlined, '模板库排序', '拖动调整顺序 / 隐藏分组',
-                      () {
+                _groupTitle('创作与导出'),
+                _card([
+                  _row(Icons.ios_share_outlined, '导出默认设置',
+                      '${_s.qualityLabel} · ${_s.hardwareLabel}', () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (_) => const _TplSortPage()),
-                    );
-                  }),
-                  _setRow(Icons.view_week_outlined, '创作页排序', '拖动调整顺序 / 隐藏卡片',
-                      () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (_) => const _HomeSortPage()),
-                    );
-                  }),
-                ]),
-                _setGroupTitle('界面'),
-                _setCard([
-                  _setRow(Icons.auto_awesome_outlined, '界面与外观',
-                      '底栏玻璃 · 背景模式 · 自动取色', () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => _GeneralPage(initial: initial),
+                        builder: (_) => _ExportSettingsPage(initial: _s),
                       ),
+                    ).then((r) async {
+                      if (r is AppSettings && mounted) {
+                        setState(() => _s = r);
+                        await _save();
+                      }
+                    });
+                  }),
+                  _row(Icons.sort_outlined, '模板库排序', null, () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const _TplSortPage()),
+                    );
+                  }),
+                  _row(Icons.view_week_outlined, '创作页排序', null, () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const _HomeSortPage()),
                     );
                   }),
                 ]),
-                _setGroupTitle('关于'),
-                _setCard([
-                  _setRow(Icons.info_outline, '版本', '3.3.0', null),
+                _groupTitle('界面'),
+                _card([
+                  _switchRow(
+                    Icons.brush_outlined,
+                    '自动取色',
+                    _s.autoPickBg,
+                    (v) async {
+                      setState(() => _s = _copy(autoPickBg: v));
+                      await _save();
+                    },
+                  ),
+                  _row(Icons.brightness_6_outlined, '背景模式', _s.themeModeLabel,
+                      _pickThemeMode),
+                ]),
+                _groupTitle('数据'),
+                _card([
+                  _switchRow(
+                    Icons.play_circle_outline,
+                    '开屏动画',
+                    _s.bootAnim,
+                    (v) async {
+                      setState(() => _s = _copy(bootAnim: v));
+                      await _save();
+                    },
+                  ),
+                  _switchRow(
+                    Icons.save_outlined,
+                    '自动留存模板背景',
+                    _s.autoSaveBg,
+                    (v) async {
+                      setState(() => _s = _copy(autoSaveBg: v));
+                      await _save();
+                    },
+                  ),
                 ]),
               ],
             ),
@@ -1786,7 +1857,7 @@ class _SettingsScreen extends StatelessWidget {
     );
   }
 
-  Widget _setGroupTitle(String s) => Padding(
+  Widget _groupTitle(String s) => Padding(
         padding: const EdgeInsets.fromLTRB(4, 14, 4, 8),
         child: Text(s,
             style: TextStyle(
@@ -1796,7 +1867,7 @@ class _SettingsScreen extends StatelessWidget {
                 letterSpacing: .3)),
       );
 
-  Widget _setCard(List<Widget> children) => Container(
+  Widget _card(List<Widget> children) => Container(
         margin: const EdgeInsets.only(bottom: 4),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
@@ -1806,7 +1877,7 @@ class _SettingsScreen extends StatelessWidget {
         child: Column(children: children),
       );
 
-  Widget _setRow(IconData icon, String label, String? value, VoidCallback? onTap) {
+  Widget _row(IconData icon, String label, String? value, VoidCallback? onTap) {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: onTap,
@@ -1826,13 +1897,11 @@ class _SettingsScreen extends StatelessWidget {
                 child: Text(value,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                        fontSize: 12, color: AppColors.textSub)),
+                    style: TextStyle(fontSize: 12, color: AppColors.textSub)),
               ),
             if (onTap != null) ...[
               const SizedBox(width: 4),
-              Icon(Icons.chevron_right,
-                  size: 20, color: AppColors.textFaint),
+              Icon(Icons.chevron_right, size: 20, color: AppColors.textFaint),
             ],
           ],
         ),
@@ -1840,18 +1909,107 @@ class _SettingsScreen extends StatelessWidget {
     );
   }
 
-  /// push 三级页并把返回的 AppSettings 保存
-  static Future<void> _pushAndSave(BuildContext context, Widget page) async {
-    final r = await Navigator.push<AppSettings>(
-      context,
-      MaterialPageRoute(builder: (_) => page),
+  Widget _switchRow(
+      IconData icon, String label, bool value, ValueChanged<bool> onChanged) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Row(
+        children: [
+          Icon(icon, size: 20, color: AppColors.accent),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(label,
+                style:
+                    const TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
+          ),
+          Transform.scale(
+            scale: 0.85,
+            child: Switch.adaptive(
+              value: value,
+              activeColor: Colors.white,
+              activeTrackColor: AppColors.accent,
+              onChanged: onChanged,
+            ),
+          ),
+        ],
+      ),
     );
-    if (r == null) return;
-    await SettingsStore().save(r);
-    gNavGlass.value = r.navGlass;
-    gNavGlassOpacity.value = r.navGlassOpacity;
-    gThemeMode.value = AppTheme.parse(r.themeMode);
-    gAutoPickBg.value = r.autoPickBg;
+  }
+}
+
+/// 三级页：背景模式（白色 / 黑色 / 跟随系统）
+class _ThemeModePage extends StatefulWidget {
+  final String initial;
+  const _ThemeModePage({required this.initial});
+
+  @override
+  State<_ThemeModePage> createState() => _ThemeModePageState();
+}
+
+class _ThemeModePageState extends State<_ThemeModePage> {
+  late String _mode = widget.initial;
+
+  static const _options = [
+    ('light', '白色', Icons.light_mode_outlined),
+    ('dark', '黑色', Icons.dark_mode_outlined),
+    ('system', '跟随系统', Icons.brightness_auto_outlined),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.bg,
+      body: Column(
+        children: [
+          const _SettingsHeader(title: '背景模式'),
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.fromLTRB(14, 4, 14, 30),
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    gradient: glassCardGradient(),
+                    border: Border.all(color: glassCardBorder(), width: 1.5),
+                  ),
+                  child: Column(
+                    children: [
+                      for (final o in _options)
+                        GestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          onTap: () {
+                            HapticFeedback.selectionClick();
+                            Navigator.pop(context, o.$1);
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 15),
+                            child: Row(
+                              children: [
+                                Icon(o.$3, size: 20, color: AppColors.accent),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Text(o.$2,
+                                      style: const TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w700)),
+                                ),
+                                if (_mode == o.$1)
+                                  Icon(Icons.check_rounded,
+                                      size: 20, color: AppColors.accent),
+                              ],
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -1880,83 +2038,178 @@ class _ExportSettingsPage extends StatelessWidget {
 }
 
 /// 三级页：模板库排序（原弹卡内容）
-class _TplSortPage extends StatelessWidget {
+/// 三级页：模板库排序（全宽卡片，与导出默认设置同宽）
+class _TplSortPage extends StatefulWidget {
   const _TplSortPage();
 
   @override
+  State<_TplSortPage> createState() => _TplSortPageState();
+}
+
+class _TplSortPageState extends State<_TplSortPage> {
+  late List<String> _order = () {
+    final cur = tplGroupOrder();
+    return cur.isEmpty ? <String>[] : List<String>.from(cur);
+  }();
+
+  late Set<String> _hidden = gTplHidden.value.toSet();
+
+  Future<void> _save() async {
+    final s = await SettingsStore().load();
+    await SettingsStore().save(AppSettings(
+      background: s.background,
+      quality: s.quality,
+      hardware: s.hardware,
+      fps: s.fps,
+      autoSaveBg: s.autoSaveBg,
+      autoPickBg: s.autoPickBg,
+      navGlass: s.navGlass,
+      navGlassOpacity: s.navGlassOpacity,
+      themeMode: s.themeMode,
+      tplGroups: _order,
+      tplHidden: _hidden.toList(),
+      homeOrder: s.homeOrder,
+      homeHidden: s.homeHidden,
+    ));
+    gTplGroups.value = _order;
+    gTplHidden.value = _hidden.toList();
+  }
+
+  Future<void> _reset() async {
+    setState(() {
+      _order = <String>[];
+      _hidden = <String>{};
+    });
+    await SettingsStore().save(AppSettings(
+      tplGroups: const [],
+      tplHidden: const [],
+    ));
+    gTplGroups.value = <String>[];
+    gTplHidden.value = <String>[];
+    if (mounted) Navigator.pop(context);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.bg,
-      body: Column(
-        children: [
-          const _SettingsHeader(title: '模板库排序'),
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(14, 4, 14, 30),
-              child: GroupSortSheet(
-                order: tplGroupOrder(),
-                hidden: gTplHidden.value,
-              ),
-            ),
-          ),
-        ],
-      ),
+    return _SortScaffold(
+      title: '模板库排序',
+      hint: '拖动右侧 ≡ 调整分组顺序，点眼睛隐藏/显示',
+      order: _order,
+      hidden: _hidden,
+      onReorder: (oldI, newI) {
+        setState(() {
+          if (newI > oldI) newI -= 1;
+          final it = _order.removeAt(oldI);
+          _order.insert(newI, it);
+        });
+        _save();
+      },
+      onToggle: (k) {
+        setState(() {
+          if (!_hidden.remove(k)) _hidden.add(k);
+        });
+        _save();
+      },
+      onReset: _reset,
     );
   }
 }
 
-/// 三级页：创作页排序（原弹卡内容）
-class _HomeSortPage extends StatelessWidget {
+/// 三级页：创作页排序（全宽卡片）
+class _HomeSortPage extends StatefulWidget {
   const _HomeSortPage();
 
   @override
+  State<_HomeSortPage> createState() => _HomeSortPageState();
+}
+
+class _HomeSortPageState extends State<_HomeSortPage> {
+  late List<String> _order = () {
+    final cur = gHomeOrder.value;
+    return cur.isEmpty ? List<String>.from(kDefaultHomeOrder) : List<String>.from(cur);
+  }();
+
+  late Set<String> _hidden = gHomeHidden.value.toSet();
+
+  Future<void> _save() async {
+    final s = await SettingsStore().load();
+    await SettingsStore().save(AppSettings(
+      background: s.background,
+      quality: s.quality,
+      hardware: s.hardware,
+      fps: s.fps,
+      autoSaveBg: s.autoSaveBg,
+      autoPickBg: s.autoPickBg,
+      navGlass: s.navGlass,
+      navGlassOpacity: s.navGlassOpacity,
+      themeMode: s.themeMode,
+      tplGroups: s.tplGroups,
+      tplHidden: s.tplHidden,
+      homeOrder: _order,
+      homeHidden: _hidden.toList(),
+    ));
+    gHomeOrder.value = _order;
+    gHomeHidden.value = _hidden.toList();
+  }
+
+  Future<void> _reset() async {
+    setState(() {
+      _order = List<String>.from(kDefaultHomeOrder);
+      _hidden = <String>{};
+    });
+    gHomeOrder.value = <String>[];
+    gHomeHidden.value = <String>[];
+    await _save();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.bg,
-      body: Column(
-        children: [
-          const _SettingsHeader(title: '创作页排序'),
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(14, 4, 14, 30),
-              child: _HomeSortSheet(
-                order: gHomeOrder.value.isEmpty
-                    ? List<String>.from(kDefaultHomeOrder)
-                    : gHomeOrder.value,
-                hidden: gHomeHidden.value,
-                onChanged: (order, hidden) async {
-                  gHomeOrder.value = order;
-                  gHomeHidden.value = hidden;
-                  final s = await SettingsStore().load();
-                  await SettingsStore().save(AppSettings(
-                    background: s.background,
-                    quality: s.quality,
-                    hardware: s.hardware,
-                    fps: s.fps,
-                    autoSaveBg: s.autoSaveBg,
-                    autoPickBg: s.autoPickBg,
-                    navGlass: s.navGlass,
-                    navGlassOpacity: s.navGlassOpacity,
-                    themeMode: s.themeMode,
-                    tplGroups: s.tplGroups,
-                    tplHidden: s.tplHidden,
-                    homeOrder: order,
-                    homeHidden: hidden,
-                  ));
-                },
-              ),
-            ),
-          ),
-        ],
-      ),
+    return _SortScaffold(
+      title: '创作页排序',
+      hint: '拖动右侧 ≡ 调整卡片顺序，点眼睛隐藏/显示',
+      order: _order,
+      hidden: _hidden,
+      labelOf: (k) => kHomeCardNames[k] ?? k,
+      onReorder: (oldI, newI) {
+        setState(() {
+          if (newI > oldI) newI -= 1;
+          final it = _order.removeAt(oldI);
+          _order.insert(newI, it);
+        });
+        _save();
+      },
+      onToggle: (k) {
+        setState(() {
+          if (!_hidden.remove(k)) _hidden.add(k);
+        });
+        _save();
+      },
+      onReset: _reset,
     );
   }
 }
 
-/// 三级页：界面与外观（原通用设置内容）
-class _GeneralPage extends StatelessWidget {
-  final AppSettings initial;
-  const _GeneralPage({required this.initial});
+/// 排序页通用骨架（全宽卡片 + 拖动 + 眼睛 + 恢复默认）
+class _SortScaffold extends StatelessWidget {
+  final String title;
+  final String hint;
+  final List<String> order;
+  final Set<String> hidden;
+  final String Function(String)? labelOf;
+  final void Function(int, int) onReorder;
+  final void Function(String) onToggle;
+  final VoidCallback onReset;
+
+  const _SortScaffold({
+    required this.title,
+    required this.hint,
+    required this.order,
+    required this.hidden,
+    required this.onReorder,
+    required this.onToggle,
+    required this.onReset,
+    this.labelOf,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -1964,11 +2217,102 @@ class _GeneralPage extends StatelessWidget {
       backgroundColor: AppColors.bg,
       body: Column(
         children: [
-          const _SettingsHeader(title: '界面与外观'),
+          _SettingsHeader(title: title),
           Expanded(
-            child: SingleChildScrollView(
+            child: ListView(
               padding: const EdgeInsets.fromLTRB(14, 4, 14, 30),
-              child: _GeneralSheet(initial: initial),
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(4, 8, 4, 10),
+                  child: Text(hint,
+                      style: TextStyle(
+                          fontSize: 11.5, color: AppColors.textSub)),
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    gradient: glassCardGradient(),
+                    border: Border.all(color: glassCardBorder(), width: 1.5),
+                  ),
+                  child: ReorderableListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    buildDefaultDragHandles: false,
+                    itemCount: order.length,
+                    onReorder: onReorder,
+                    proxyDecorator: (child, i, anim) => Material(
+                      color: Colors.transparent,
+                      child: child,
+                    ),
+                    itemBuilder: (ctx, i) {
+                      final k = order[i];
+                      final isHidden = hidden.contains(k);
+                      final label = labelOf?.call(k) ?? k;
+                      return Container(
+                        key: ValueKey(k),
+                        padding: const EdgeInsets.fromLTRB(16, 12, 12, 12),
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(color: Color(0xFFF2F5FA)),
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(label,
+                                  style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w700,
+                                      color: isHidden
+                                          ? AppColors.textFaint
+                                          : AppColors.text)),
+                            ),
+                            GestureDetector(
+                              onTap: () => onToggle(k),
+                              child: Padding(
+                                padding: const EdgeInsets.all(6),
+                                child: Icon(
+                                  isHidden
+                                      ? Icons.visibility_off_outlined
+                                      : Icons.visibility_outlined,
+                                  size: 19,
+                                  color: isHidden
+                                      ? AppColors.textFaint
+                                      : AppColors.textSub,
+                                ),
+                              ),
+                            ),
+                            ReorderableDragStartListener(
+                              index: i,
+                              child: Icon(Icons.drag_handle,
+                                  size: 20, color: AppColors.textFaint),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(height: 14),
+                GestureDetector(
+                  onTap: onReset,
+                  child: Container(
+                    height: 48,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: AppColors.card,
+                      borderRadius: BorderRadius.circular(24),
+                      border:
+                          Border.all(color: glassCardBorder(), width: 1.5),
+                    ),
+                    child: Text('恢复默认顺序',
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.accent)),
+                  ),
+                ),
+              ],
             ),
           ),
         ],

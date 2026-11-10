@@ -901,8 +901,17 @@ List<String> get _chips {
         context: context,
 
         builder: (ctx) => AlertDialog(
+          backgroundColor: AppColors.card,
+          surfaceTintColor: Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+            side: BorderSide(color: glassCardBorder(), width: 1.5),
+          ),
 
-          title: const Text('导入模板'),
+          title: const Text(
+            '导入模板',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+          ),
 
           content: SingleChildScrollView(
 

@@ -1028,6 +1028,8 @@ class _ComposeScreenState extends State<ComposeScreen>
         bgImagePath: bgFromContent ? bgContentPath : bgImagePath,
         bgColor: bgColor.toARGB32(),
         bgMirror: _bgMirror,
+        bgBlur: bgBlurOn,
+        bgBlurSigma: bgBlurSigma,
         shellRatio: 0.8,
       );
     }
@@ -1111,6 +1113,8 @@ class _ComposeScreenState extends State<ComposeScreen>
         bgImagePath: bgFromContent ? bgContentPath : bgImagePath,
         bgColor: bgColor.toARGB32(),
         bgMirror: _bgMirror,
+        bgBlur: bgBlurOn,
+        bgBlurSigma: bgBlurSigma,
         shellRatio: 0.8,
       );
       final outDir = await getApplicationDocumentsDirectory();

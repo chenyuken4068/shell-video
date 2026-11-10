@@ -1,6 +1,7 @@
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import '../services/motion_probe.dart';
+import '../widgets/glass_pill.dart';
 import '../widgets/media_card.dart';
 
 import '../theme/app_theme.dart';
@@ -550,21 +551,11 @@ class LibraryScreenState extends State<LibraryScreen> {
     return Positioned(
       left: 16,
       right: 16,
-      bottom: 96,
-      child: Container(
+      // 主悬浮底栏：bottom 16 + 高度约 78 + 间距 12 → 这里固定 110（含安全区）
+      bottom: 110 + MediaQuery.paddingOf(context).bottom,
+      child: GlassPill(
         height: 58,
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: .92),
-          borderRadius: BorderRadius.circular(29),
-          border: Border.all(color: Colors.white, width: 1.5),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: .16),
-              blurRadius: 30,
-              offset: const Offset(0, 12),
-            ),
-          ],
-        ),
+        radius: 29,
         child: Row(
           children: [
             _batchAction(
@@ -831,181 +822,276 @@ class _ImageViewerScreenState extends State<ImageViewerScreen> {
     if (mounted) Navigator.pop(context, true);
   }
 
-  Widget _glassBtn({required IconData icon, required VoidCallback onTap, Color? color}) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 42,
-        height: 42,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: Colors.black.withValues(alpha: .42),
-          border: Border.all(color: Colors.white.withValues(alpha: .18)),
-        ),
-        child: Icon(icon, size: 20, color: color ?? Colors.white),
-      ),
-    );
-  }
 
-  Widget _action({
-    required IconData icon,
-    required String label,
-    required VoidCallback onTap,
-    Color? color,
-    bool active = false,
-  }) {
-    final c = color ?? Colors.white.withValues(alpha: .82);
-    return Expanded(
-      child: GestureDetector(
-        onTap: onTap,
-        behavior: HitTestBehavior.opaque,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(active ? Icons.check_rounded : icon, size: 20, color: active ? const Color(0xFF3DD68C) : c),
-            const SizedBox(height: 2),
-            Text(
-              label,
-              style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.w600, color: c),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
-  Widget _divider() => Container(width: 1, height: 26, color: Colors.white.withValues(alpha: .14));
 
 
   @override
   Widget build(BuildContext context) {
     final f = File(widget.path);
+    final exists = f.existsSync();
+    final mb = exists ? f.lengthSync() / (1024 * 1024) : 0.0;
+
     return Scaffold(
-      backgroundColor: const Color(0xFF0B0C0F),
-      body: Stack(
+      backgroundColor: AppColors.bg,
+      body: Column(
         children: [
-          Positioned.fill(
-            child: GestureDetector(
-              onTap: () => setState(() => _showUI = !_showUI),
-              child: InteractiveViewer(
-                transformationController: _transform,
-                minScale: 1,
-                maxScale: 5,
-                child: Center(
-                  child: f.existsSync()
-                      ? Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            // 播放中显示视频，否则显示静态图
-                            if (_motionPlaying &&
-                                _vctrl != null &&
-                                _vctrl!.value.isInitialized)
-                              AspectRatio(
-                                aspectRatio: _vctrl!.value.aspectRatio,
-                                child: VideoPlayer(_vctrl!),
-                              )
-                            else
-                              Image.file(f, fit: BoxFit.contain),
-                            // 实况照片：中心播放按钮
-                            if (_isMotion && !_motionPlaying)
-                              GestureDetector(
-                                onTap: _toggleMotion,
-                                child: Container(
-                                  width: 58,
-                                  height: 58,
-                                  alignment: Alignment.center,
-                                  decoration: BoxDecoration(
-                                    color: Colors.black
-                                        .withValues(alpha: .38),
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                        color: Colors.white
-                                            .withValues(alpha: .35)),
-                                  ),
-                                  child: const Icon(
-                                    Icons.play_arrow_rounded,
-                                    size: 34,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                          ],
-                        )
-                      : Icon(Icons.broken_image_outlined, size: 48, color: Colors.white.withValues(alpha: .4)),
-                ),
-              ),
-            ),
-          ),
-          if (_showUI) ...[
-            // 顶部：返回 / 文件名 / 更多（删除）
-            Positioned(
-              left: 16,
-              right: 16,
-              top: MediaQuery.paddingOf(context).top + 8,
-              height: 44,
-              child: Row(
+          _topBar(),
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(16, 4, 16, 14),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  _glassBtn(icon: Icons.chevron_left, onTap: () => Navigator.pop(context)),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      widget.name,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 14.5,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
-                        shadows: [Shadow(color: Colors.black54, blurRadius: 8)],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  _glassBtn(icon: Icons.more_horiz, onTap: _delete),
-                ],
-              ),
-            ),
-            // 底部操作栏
-            Positioned(
-              left: 16,
-              right: 16,
-              bottom: MediaQuery.paddingOf(context).bottom + 20,
-              height: 64,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(32),
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-                  child: Container(
+                  // ── 媒体卡片（与全 App 一致的柔光玻璃卡）──
+                  Container(
+                    padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: Colors.black.withValues(alpha: .55),
-                      borderRadius: BorderRadius.circular(32),
-                      border: Border.all(color: Colors.white.withValues(alpha: .18), width: 1.5),
-                    ),
-                    child: Row(
-                      children: [
-                        _action(
-                          icon: Icons.download_rounded,
-                          label: _busy ? '保存中' : '保存',
-                          active: _saved,
-                          onTap: _save,
-                        ),
-                        _divider(),
-                        _action(icon: Icons.ios_share, label: '分享', onTap: _share),
-                        _divider(),
-                        _action(
-                          icon: Icons.delete_outline,
-                          label: '删除',
-                          color: const Color(0xFFFF7B72),
-                          onTap: _delete,
+                      borderRadius: BorderRadius.circular(20),
+                      gradient: glassCardGradient(),
+                      border: Border.all(color: glassCardBorder(), width: 1.5),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: .05),
+                          blurRadius: 16,
+                          offset: const Offset(0, 6),
                         ),
                       ],
                     ),
+                    child: Column(
+                      children: [
+                        // 固定预览区（contain 展示，不铺满全屏）
+                        SizedBox(
+                          height: 430,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(14),
+                            child: ColoredBox(
+                              color: _motionPlaying
+                                  ? Colors.black
+                                  : const Color(0xFFEEF1F7),
+                              child: exists
+                                  ? (_motionPlaying &&
+                                          _vctrl != null &&
+                                          _vctrl!.value.isInitialized
+                                      ? Center(
+                                          child: AspectRatio(
+                                            aspectRatio:
+                                                _vctrl!.value.aspectRatio,
+                                            child: VideoPlayer(_vctrl!),
+                                          ),
+                                        )
+                                      : InteractiveViewer(
+                                          transformationController: _transform,
+                                          minScale: 1,
+                                          maxScale: 4,
+                                          child: Center(
+                                            child: Image.file(f,
+                                                fit: BoxFit.contain),
+                                          ),
+                                        ))
+                                  : Center(
+                                      child: Icon(Icons.broken_image_outlined,
+                                          size: 42, color: AppColors.textFaint),
+                                    ),
+                            ),
+                          ),
+                        ),
+                        // 实况：播放按钮（卡片内、媒体下方）
+                        if (_isMotion && !_motionPlaying) ...[
+                          const SizedBox(height: 12),
+                          GestureDetector(
+                            onTap: _toggleMotion,
+                            child: Container(
+                              height: 44,
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 22),
+                              decoration: BoxDecoration(
+                                color:
+                                    AppColors.accent.withValues(alpha: .10),
+                                borderRadius: BorderRadius.circular(22),
+                                border: Border.all(
+                                    color:
+                                        AppColors.accent.withValues(alpha: .28),
+                                    width: 1.5),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(Icons.play_arrow_rounded,
+                                      size: 22, color: AppColors.accent),
+                                  const SizedBox(width: 6),
+                                  Text('播放实况',
+                                      style: TextStyle(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w800,
+                                          color: AppColors.accent)),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
                   ),
-                ),
+                  const SizedBox(height: 10),
+                  // ── 信息胶囊 ──
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      _ivChip(
+                        icon: _isMotion
+                            ? Icons.motion_photos_on_outlined
+                            : Icons.image_outlined,
+                        text: _isMotion ? '实况照片' : '图片',
+                      ),
+                      _ivChip(text: '${mb.toStringAsFixed(1)} MB'),
+                    ],
+                  ),
+                ],
               ),
             ),
-          ],
+          ),
+          // ── 底部操作栏 ──
+          _ivActions(),
         ],
+      ),
+    );
+  }
+
+  Widget _topBar() {
+    return SafeArea(
+      bottom: false,
+      child: SizedBox(
+        height: 56,
+        child: Row(
+          children: [
+            const SizedBox(width: 12),
+            GestureDetector(
+              onTap: () => Navigator.pop(context),
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: AppColors.fill,
+                  shape: BoxShape.circle,
+                ),
+                child:
+                    Icon(Icons.chevron_left, size: 22, color: AppColors.text),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                widget.name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style:
+                    const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+              ),
+            ),
+            const SizedBox(width: 8),
+            GestureDetector(
+              onTap: _delete,
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: AppColors.fill,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(Icons.more_horiz,
+                    size: 20, color: AppColors.textSub),
+              ),
+            ),
+            const SizedBox(width: 14),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _ivChip({IconData? icon, required String text}) {
+    return Container(
+      height: 26,
+      padding: const EdgeInsets.symmetric(horizontal: 11),
+      decoration: BoxDecoration(
+        color: AppColors.card,
+        borderRadius: BorderRadius.circular(13),
+        border: Border.all(color: glassCardBorder(), width: 1.2),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (icon != null) ...[
+            Icon(icon, size: 13, color: AppColors.textSub),
+            const SizedBox(width: 5),
+          ],
+          Text(text,
+              style: TextStyle(
+                  fontSize: 10.5,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textSub)),
+        ],
+      ),
+    );
+  }
+
+  Widget _ivActions() {
+    return SafeArea(
+      top: false,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 4, 16, 14),
+        child: Container(
+          height: 64,
+          decoration: BoxDecoration(
+            color: AppColors.card.withValues(alpha: .92),
+            borderRadius: BorderRadius.circular(32),
+            border: Border.all(color: glassCardBorder(), width: 1.5),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: .06),
+                blurRadius: 20,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              _ivBtn(Icons.download_rounded, _saved ? '已保存' : '保存', _save,
+                  color: _saved ? const Color(0xFF22A06B) : null),
+              _ivDivider(),
+              _ivBtn(Icons.share_outlined, '分享', _share),
+              _ivDivider(),
+              _ivBtn(Icons.delete_outline, '删除', _delete,
+                  color: const Color(0xFFE5484D)),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _ivDivider() =>
+      Container(width: 1, height: 26, color: AppColors.divider);
+
+  Widget _ivBtn(IconData icon, String label, VoidCallback onTap,
+      {Color? color}) {
+    final c = color ?? AppColors.textSub;
+    return Expanded(
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: _busy ? null : onTap,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 20, color: c),
+            const SizedBox(height: 3),
+            Text(label,
+                style: TextStyle(
+                    fontSize: 10, fontWeight: FontWeight.w700, color: c)),
+          ],
+        ),
       ),
     );
   }
@@ -1156,174 +1242,295 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     );
   }
 
-  Widget _divider() => Container(width: 1, height: 26, color: Colors.white.withValues(alpha: .14));
 
   @override
   Widget build(BuildContext context) {
-    final padTop = MediaQuery.paddingOf(context).top;
-    final padBottom = MediaQuery.paddingOf(context).bottom;
-
-    Widget videoArea;
-    if (_err != null) {
-      videoArea = Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.error_outline, color: Colors.white.withValues(alpha: .5), size: 44),
-          const SizedBox(height: 12),
-          Text('播放失败: $_err',
-              style: TextStyle(color: Colors.white.withValues(alpha: .6), fontSize: 13)),
-        ],
-      );
-    } else if (!_init) {
-      videoArea = const CircularProgressIndicator(color: Colors.white70);
-    } else {
-      videoArea = GestureDetector(
-        onTap: () => setState(() {
-          _ctrl.value.isPlaying ? _ctrl.pause() : _ctrl.play();
-        }),
-        child: AspectRatio(
-          aspectRatio: _ctrl.value.aspectRatio,
-          child: VideoPlayer(_ctrl),
-        ),
-      );
-    }
+    final f = File(widget.path);
+    final exists = f.existsSync();
+    final mb = exists ? f.lengthSync() / (1024 * 1024) : 0.0;
+    final dur = _ctrl.value.isInitialized ? _ctrl.value.duration : Duration.zero;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0B0C0F),
-      body: Stack(
+      backgroundColor: AppColors.bg,
+      body: Column(
         children: [
-          Positioned.fill(
-            child: GestureDetector(
-              onTap: () => setState(() => _showUI = !_showUI),
-              child: Center(child: videoArea),
-            ),
-          ),
-          if (_showUI) ...[
-            // 顶部：返回 / 文件名 / 更多（删除）
-            Positioned(
-              left: 16,
-              right: 16,
-              top: padTop + 8,
-              height: 44,
-              child: Row(
+          _vpTopBar(),
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(16, 4, 16, 14),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  _glassBtn(Icons.chevron_left, () => Navigator.pop(context)),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      widget.name,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 14.5,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
-                        shadows: [Shadow(color: Colors.black54, blurRadius: 8)],
+                  // ── 视频卡片 ──
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      gradient: glassCardGradient(),
+                      border: Border.all(color: glassCardBorder(), width: 1.5),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: .05),
+                          blurRadius: 16,
+                          offset: const Offset(0, 6),
+                        ),
+                      ],
+                    ),
+                    child: SizedBox(
+                      height: 430,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(14),
+                        child: ColoredBox(
+                          color: const Color(0xFF0B0C0F),
+                          child: _vpVideoArea(),
+                        ),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 10),
-                  _glassBtn(Icons.more_horiz, _delete),
+                  const SizedBox(height: 10),
+                  // ── 进度条（可拖动）──
+                  if (_init && _err == null)
+                    ValueListenableBuilder<VideoPlayerValue>(
+                      valueListenable: _ctrl,
+                      builder: (_, v, __) => Column(
+                        children: [
+                          VideoProgressIndicator(
+                            _ctrl,
+                            allowScrubbing: true,
+                            colors: const VideoProgressColors(
+                              playedColor: AppColors.accent,
+                              bufferedColor: Color(0xFFD7E5FF),
+                              backgroundColor: Color(0xFFE3E8F2),
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(_fmt(v.position),
+                                  style: TextStyle(
+                                      fontSize: 11,
+                                      color: AppColors.textSub)),
+                              Text(_fmt(v.duration),
+                                  style: TextStyle(
+                                      fontSize: 11,
+                                      color: AppColors.textSub)),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  const SizedBox(height: 6),
+                  // ── 信息胶囊 ──
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      _vpChip(icon: Icons.movie_outlined, text: '视频'),
+                      _vpChip(text: _fmt(dur)),
+                      _vpChip(text: '${mb.toStringAsFixed(1)} MB'),
+                    ],
+                  ),
                 ],
               ),
             ),
-            // 中央播放/暂停
-            if (_init)
-              Center(
-                child: ValueListenableBuilder<VideoPlayerValue>(
-                  valueListenable: _ctrl,
-                  builder: (_, v, _) => IgnorePointer(
-                    child: AnimatedOpacity(
-                      opacity: v.isPlaying ? 0 : 1,
-                      duration: const Duration(milliseconds: 200),
-                      child: Container(
-                        width: 64,
-                        height: 64,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.black.withValues(alpha: .46),
-                          border: Border.all(color: Colors.white.withValues(alpha: .28), width: 1.5),
-                        ),
-                        child: const Icon(Icons.play_arrow_rounded, size: 34, color: Colors.white),
-                      ),
-                    ),
-                  ),
+          ),
+          _vpActions(),
+        ],
+      ),
+    );
+  }
+
+  Widget _vpTopBar() {
+    return SafeArea(
+      bottom: false,
+      child: SizedBox(
+        height: 56,
+        child: Row(
+          children: [
+            const SizedBox(width: 12),
+            GestureDetector(
+              onTap: () => Navigator.pop(context),
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: AppColors.fill,
+                  shape: BoxShape.circle,
                 ),
-              ),
-            // 进度条 + 时间
-            if (_init)
-              Positioned(
-                left: 20,
-                right: 20,
-                bottom: padBottom + 108,
-                child: ValueListenableBuilder<VideoPlayerValue>(
-                  valueListenable: _ctrl,
-                  builder: (_, v, _) {
-                    final total = v.duration.inMilliseconds.toDouble();
-                    final pos = v.position.inMilliseconds.toDouble().clamp(0.0, total);
-                    return Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        SliderTheme(
-                          data: SliderThemeData(
-                            trackHeight: 4,
-                            thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6),
-                            overlayShape: const RoundSliderOverlayShape(overlayRadius: 16),
-                            activeTrackColor: Colors.white,
-                            inactiveTrackColor: Colors.white.withValues(alpha: .22),
-                            thumbColor: Colors.white,
-                          ),
-                          child: Slider(
-                            value: total <= 0 ? 0 : pos,
-                            max: total <= 0 ? 1 : total,
-                            onChanged: (x) => _ctrl.seekTo(Duration(milliseconds: x.round())),
-                          ),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(_fmt(v.position),
-                                style: TextStyle(fontSize: 11, color: Colors.white.withValues(alpha: .72))),
-                            Text(_fmt(v.duration),
-                                style: TextStyle(fontSize: 11, color: Colors.white.withValues(alpha: .72))),
-                          ],
-                        ),
-                      ],
-                    );
-                  },
-                ),
-              ),
-            // 底部玻璃操作栏
-            Positioned(
-              left: 16,
-              right: 16,
-              bottom: padBottom + 20,
-              height: 64,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(32),
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.black.withValues(alpha: .55),
-                      borderRadius: BorderRadius.circular(32),
-                      border: Border.all(color: Colors.white.withValues(alpha: .18), width: 1.5),
-                    ),
-                    child: Row(
-                      children: [
-                        _action(Icons.download_rounded, _busy ? '保存中' : '保存', _save, active: _saved),
-                        _divider(),
-                        _action(Icons.ios_share, '分享', _share),
-                        _divider(),
-                        _action(Icons.delete_outline, '删除', _delete, color: const Color(0xFFFF7B72)),
-                      ],
-                    ),
-                  ),
-                ),
+                child:
+                    Icon(Icons.chevron_left, size: 22, color: AppColors.text),
               ),
             ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                widget.name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style:
+                    const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+              ),
+            ),
+            const SizedBox(width: 8),
+            GestureDetector(
+              onTap: _delete,
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: AppColors.fill,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(Icons.more_horiz,
+                    size: 20, color: AppColors.textSub),
+              ),
+            ),
+            const SizedBox(width: 14),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _vpVideoArea() {
+    if (_err != null) {
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.error_outline,
+                color: Colors.white.withValues(alpha: .55), size: 40),
+            const SizedBox(height: 10),
+            Text('播放失败: $_err',
+                style: TextStyle(
+                    color: Colors.white.withValues(alpha: .65),
+                    fontSize: 12)),
+          ],
+        ),
+      );
+    }
+    if (!_init) {
+      return const Center(
+          child: CircularProgressIndicator(color: Colors.white70));
+    }
+    return ValueListenableBuilder<VideoPlayerValue>(
+      valueListenable: _ctrl,
+      builder: (_, v, __) => GestureDetector(
+        onTap: () => setState(() {
+          v.isPlaying ? _ctrl.pause() : _ctrl.play();
+        }),
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Center(
+              child: AspectRatio(
+                aspectRatio: v.aspectRatio == 0 ? 9 / 16 : v.aspectRatio,
+                child: VideoPlayer(_ctrl),
+              ),
+            ),
+            // 暂停时显示播放圆钮
+            if (!v.isPlaying)
+              Container(
+                width: 58,
+                height: 58,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: .38),
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                      color: Colors.white.withValues(alpha: .35)),
+                ),
+                child: const Icon(Icons.play_arrow_rounded,
+                    size: 34, color: Colors.white),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _vpChip({IconData? icon, required String text}) {
+    return Container(
+      height: 26,
+      padding: const EdgeInsets.symmetric(horizontal: 11),
+      decoration: BoxDecoration(
+        color: AppColors.card,
+        borderRadius: BorderRadius.circular(13),
+        border: Border.all(color: glassCardBorder(), width: 1.2),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (icon != null) ...[
+            Icon(icon, size: 13, color: AppColors.textSub),
+            const SizedBox(width: 5),
+          ],
+          Text(text,
+              style: TextStyle(
+                  fontSize: 10.5,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textSub)),
         ],
+      ),
+    );
+  }
+
+  Widget _vpActions() {
+    return SafeArea(
+      top: false,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 4, 16, 14),
+        child: Container(
+          height: 64,
+          decoration: BoxDecoration(
+            color: AppColors.card.withValues(alpha: .92),
+            borderRadius: BorderRadius.circular(32),
+            border: Border.all(color: glassCardBorder(), width: 1.5),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: .06),
+                blurRadius: 20,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              _vpBtn(Icons.download_rounded, _saved ? '已保存' : '保存', _save,
+                  color: _saved ? const Color(0xFF22A06B) : null),
+              _vpDivider(),
+              _vpBtn(Icons.share_outlined, '分享', _share),
+              _vpDivider(),
+              _vpBtn(Icons.delete_outline, '删除', _delete,
+                  color: const Color(0xFFE5484D)),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _vpDivider() =>
+      Container(width: 1, height: 26, color: AppColors.divider);
+
+  Widget _vpBtn(IconData icon, String label, VoidCallback onTap,
+      {Color? color}) {
+    final c = color ?? AppColors.textSub;
+    return Expanded(
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: onTap,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 20, color: c),
+            const SizedBox(height: 3),
+            Text(label,
+                style: TextStyle(
+                    fontSize: 10, fontWeight: FontWeight.w700, color: c)),
+          ],
+        ),
       ),
     );
   }

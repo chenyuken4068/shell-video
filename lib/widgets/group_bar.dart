@@ -135,27 +135,26 @@ class _GroupBarState extends State<GroupBar> with SingleTickerProviderStateMixin
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(32),
                   child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+                    // 与主界面悬浮底栏完全一致的柔光玻璃参数
+                    filter: ImageFilter.blur(sigmaX: 22, sigmaY: 22),
                     child: Container(
                       height: _h,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(32),
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: dark
-                              ? [Colors.white.withValues(alpha: .14), Colors.white.withValues(alpha: .07)]
-                              : [Colors.white.withValues(alpha: .78), Colors.white.withValues(alpha: .52)],
-                        ),
+                        color: dark
+                            ? const Color(0xFF12131A).withValues(alpha: .78)
+                            : Colors.white.withValues(alpha: .86),
                         border: Border.all(
-                          color: Colors.white.withValues(alpha: dark ? .50 : .85),
+                          color: Colors.white
+                              .withValues(alpha: dark ? .16 : .96),
                           width: 1.5,
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: .28),
-                            blurRadius: 22,
-                            offset: const Offset(0, 8),
+                            color: Colors.black
+                                .withValues(alpha: dark ? .34 : .10),
+                            blurRadius: 30,
+                            offset: const Offset(0, 10),
                           ),
                         ],
                       ),

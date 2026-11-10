@@ -1057,28 +1057,6 @@ class _CalibrateScreenState extends State<CalibrateScreen> {
                   () => _setCornerR(_cornerR + 1),
                 ),
                 const SizedBox(height: 8),
-                // 模板名称
-                Text(
-                  '模板名称',
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.textSub),
-                ),
-                const SizedBox(height: 6),
-                TextField(
-                  controller: _nameCtrl,
-                  decoration: InputDecoration(
-                    hintText: '给这个壳模板起个名字',
-                    hintStyle: TextStyle(fontSize: 13, color: AppColors.textFaint),
-                    filled: true,
-                    fillColor: AppColors.fillSoft,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(14),
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
-                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-                ),
-                const SizedBox(height: 8),
                 Row(
                   children: [
                     Expanded(

@@ -71,6 +71,9 @@ class LongshotComposer {
     String? bgImagePath,
     int bgColor = 0xFFFFFFFF,
     bool bgMirror = true,
+    /// 背景高斯模糊（与合成台一致的 0~100 强度）
+    bool bgBlur = false,
+    double bgBlurSigma = 18,
     double shellRatio = 0.8,
     double topMargin = 90,
     double bottomMargin = 90,
@@ -102,6 +105,16 @@ class LongshotComposer {
       ui.Paint()..color = ui.Color(bgColor),
     );
     if (bgImg != null) {
+      // 高斯模糊：整层背景加 ImageFilter（sigma 按画布宽度换算，与预览一致）
+      final blurring = bgBlur && bgBlurSigma > 0;
+      if (blurring) {
+        final s = bgBlurSigma * w / 360.0;
+        canvas.saveLayer(
+          ui.Rect.fromLTWH(0, 0, w.toDouble(), h.toDouble()),
+          ui.Paint()
+            ..imageFilter = ui.ImageFilter.blur(sigmaX: s, sigmaY: s),
+        );
+      }
       final bw = L.canvasW;
       final bh = bw * bgImg.height / bgImg.width;
       var y = 0.0;
@@ -132,6 +145,8 @@ class LongshotComposer {
         y += bh;
         i++;
       }
+      // 背景模糊层结束
+      if (blurring) canvas.restore();
     }
 
     // ── ② 内容（屏幕孔 + 圆角遮罩）──

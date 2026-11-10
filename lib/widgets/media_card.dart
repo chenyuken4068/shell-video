@@ -233,16 +233,7 @@ class _MediaCardState extends State<MediaCard> {
             fit: StackFit.expand,
             children: [
               _thumb(),
-              // 选中描边
-              if (widget.selectMode && widget.selected)
-                IgnorePointer(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: AppColors.accent, width: 2.5),
-                    ),
-                  ),
-                ),
+              // （批量选择只保留右上角打勾，不再画蓝色外圈）
               // 左下角：类型徽标（与右下保存钮同款圆卡）
               Positioned(left: 8, bottom: 8, child: _typeBadge()),
               // 批量模式：右上角勾选圈（选中=蓝底白勾 / 未选=半透明灰圈）

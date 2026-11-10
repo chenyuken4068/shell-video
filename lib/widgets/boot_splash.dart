@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../services/app_settings.dart';
 import '../theme/app_theme.dart';
 
 /// 启动动画：进入 App 时按当前主题（浅色=白底 / 深色=黑底）显示合成台原理图。
@@ -24,6 +25,7 @@ class _BootSplashState extends State<BootSplash>
   )..forward();
 
   bool _done = false;
+  bool _enabled = true;
 
   @override
   void initState() {
@@ -31,6 +33,16 @@ class _BootSplashState extends State<BootSplash>
     _c.addStatusListener((s) {
       if (s == AnimationStatus.completed && mounted) setState(() => _done = true);
     });
+    // 设置里「开屏动画」关闭 → 直接跳过动画
+    SettingsStore().load().then((s) {
+      if (!mounted) return;
+      if (!s.bootAnim) {
+        setState(() {
+          _enabled = false;
+          _done = true;
+        });
+      }
+    }).catchError((_) {});
   }
 
   @override
@@ -46,7 +58,7 @@ class _BootSplashState extends State<BootSplash>
     return Stack(
       children: [
         widget.child,
-        if (!_done)
+        if (!_done && _enabled)
           Positioned.fill(
             child: IgnorePointer(
               child: AnimatedBuilder(

@@ -15,6 +15,7 @@ class AppSettings {
   int fps; // 导出帧率；0 = 原帧率（用视频探测值）
   bool autoSaveBg; // 自动留存模板背景（色值/背景图/缩放偏移）
   bool autoPickBg; // 自动取色：把素材首帧当背景（放大+模糊）
+  bool bootAnim; // 开屏动画（启动时显示合成台原理图动画）
   String navGlass; // 底栏玻璃效果：matte = 柔光玻璃（默认）/ liquid = 液态玻璃
   double navGlassOpacity; // 液态玻璃通透度（越小越透），0.02 ~ 0.30
   String themeMode; // 背景模式：light = 白色（默认）/ dark = 黑色 / system = 跟随系统
@@ -34,6 +35,7 @@ class AppSettings {
     this.fps = 0,
     this.autoSaveBg = true,
     this.autoPickBg = true,
+    this.bootAnim = true,
     this.navGlass = 'matte',
     this.navGlassOpacity = 0.02,
     this.themeMode = 'light',
@@ -67,6 +69,7 @@ class AppSettings {
         'fps': fps,
         'autoSaveBg': autoSaveBg,
         'autoPickBg': autoPickBg,
+        'bootAnim': bootAnim,
         'navGlass': navGlass,
         'navGlassOpacity': navGlassOpacity,
         'themeMode': themeMode,
@@ -83,6 +86,7 @@ class AppSettings {
         fps: (j['fps'] as num?)?.toInt() ?? 0,
         autoSaveBg: j['autoSaveBg'] as bool? ?? true,
         autoPickBg: j['autoPickBg'] as bool? ?? true,
+        bootAnim: j['bootAnim'] as bool? ?? true,
         navGlass: j['navGlass'] as String? ?? 'matte',
         navGlassOpacity: (j['navGlassOpacity'] as num?)?.toDouble() ?? 0.02,
         themeMode: j['themeMode'] as String? ?? 'light',
