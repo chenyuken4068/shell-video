@@ -330,34 +330,63 @@ class _LiveTrimScreenState extends State<LiveTrimScreen> {
                           ),
                         ),
                       ),
-                      // ▶ 播放 / 暂停：预览当前裁剪片段（自动在 startMs~endMs 内循环）
-                      GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        onTap: _togglePlay,
-                        child: Container(
-                          width: 34,
-                          height: 34,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            color: Colors.black.withValues(alpha: .55),
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                                color: Colors.white.withValues(alpha: .35)),
-                          ),
-                          child: Icon(
-                            _playing
-                                ? Icons.pause_rounded
-                                : Icons.play_arrow_rounded,
-                            size: 22,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
                     ],
                   ),
                 ),
               ),
             ),
+          ),
+        ),
+
+        // ── 播放控制（在预览卡下方，不遮挡画面）──
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+          child: Row(
+            children: [
+              GestureDetector(
+                onTap: _togglePlay,
+                child: Container(
+                  height: 40,
+                  padding: const EdgeInsets.symmetric(horizontal: 18),
+                  decoration: BoxDecoration(
+                    color: AppColors.accent.withValues(alpha: .10),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                        color: AppColors.accent.withValues(alpha: .28),
+                        width: 1.5),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        _playing
+                            ? Icons.pause_rounded
+                            : Icons.play_arrow_rounded,
+                        size: 20,
+                        color: AppColors.accent,
+                      ),
+                      const SizedBox(width: 5),
+                      Text(
+                        _playing ? '暂停' : '播放片段',
+                        style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.accent),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const Spacer(),
+              Text(
+                '${(_playMs / 1000).toStringAsFixed(1)}s'
+                ' / ${(_endMs / 1000).toStringAsFixed(1)}s',
+                style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textSub),
+              ),
+            ],
           ),
         ),
 
