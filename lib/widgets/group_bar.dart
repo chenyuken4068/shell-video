@@ -135,18 +135,18 @@ class _GroupBarState extends State<GroupBar> with SingleTickerProviderStateMixin
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(32),
                   child: BackdropFilter(
-                    // 与主界面悬浮底栏完全一致的柔光玻璃参数
-                    filter: ImageFilter.blur(sigmaX: 22, sigmaY: 22),
+                    // 与主界面悬浮底栏（LiquidGlassNavBar matte）完全一致的参数：
+                    // tint 0.50 / blur 33 / border 0.55 1.5px
+                    filter: ImageFilter.blur(sigmaX: 33, sigmaY: 33),
                     child: Container(
                       height: _h,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(32),
                         color: dark
-                            ? const Color(0xFF12131A).withValues(alpha: .78)
-                            : Colors.white.withValues(alpha: .86),
+                            ? const Color(0xFF12131A).withValues(alpha: .50)
+                            : Colors.white.withValues(alpha: .50),
                         border: Border.all(
-                          color: Colors.white
-                              .withValues(alpha: dark ? .16 : .96),
+                          color: Colors.white.withValues(alpha: .55),
                           width: 1.5,
                         ),
                         boxShadow: [
@@ -223,28 +223,26 @@ class _GroupBarState extends State<GroupBar> with SingleTickerProviderStateMixin
             child: ClipRRect(
               borderRadius: BorderRadius.circular(32),
               child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+                // 与底栏 / 主界面底栏同一套：blur 33
+                filter: ImageFilter.blur(sigmaX: 33, sigmaY: 33),
                 child: Container(
                   width: _h,
                   height: _h,
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(32),
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: dark
-                          ? [Colors.white.withValues(alpha: .14), Colors.white.withValues(alpha: .07)]
-                          : [Colors.white.withValues(alpha: .78), Colors.white.withValues(alpha: .52)],
-                    ),
+                    color: dark
+                        ? const Color(0xFF12131A).withValues(alpha: .50)
+                        : Colors.white.withValues(alpha: .50),
                     border: Border.all(
-                      color: Colors.white.withValues(alpha: dark ? .50 : .85),
+                      color: Colors.white.withValues(alpha: .55),
                       width: 1.5,
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: .28),
-                        blurRadius: 22,
+                        color: Colors.black
+                            .withValues(alpha: dark ? .30 : .12),
+                        blurRadius: 24,
                         offset: const Offset(0, 8),
                       ),
                     ],
@@ -306,27 +304,24 @@ class _GroupBarState extends State<GroupBar> with SingleTickerProviderStateMixin
               child: ClipRRect(
               borderRadius: BorderRadius.circular(20),
               child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                filter: ImageFilter.blur(sigmaX: 33, sigmaY: 33),
                 child: Container(
                   padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: dark
-                          ? [Colors.white.withValues(alpha: .17), Colors.white.withValues(alpha: .10)]
-                          : [Colors.white.withValues(alpha: .90), Colors.white.withValues(alpha: .70)],
-                    ),
                     borderRadius: BorderRadius.circular(20),
+                    color: dark
+                        ? const Color(0xFF12131A).withValues(alpha: .50)
+                        : Colors.white.withValues(alpha: .50),
                     border: Border.all(
-                      color: Colors.white.withValues(alpha: dark ? .42 : .9),
-                      width: 1.4,
+                      color: Colors.white.withValues(alpha: .55),
+                      width: 1.5,
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: .45),
-                        blurRadius: 30,
-                        offset: const Offset(0, 12),
+                        color: Colors.black
+                            .withValues(alpha: dark ? .30 : .12),
+                        blurRadius: 24,
+                        offset: const Offset(0, 8),
                       ),
                     ],
                   ),

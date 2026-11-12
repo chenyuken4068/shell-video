@@ -551,8 +551,8 @@ class LibraryScreenState extends State<LibraryScreen> {
     return Positioned(
       left: 16,
       right: 16,
-      // 主悬浮底栏：bottom 16 + 高度约 78 + 间距 12 → 这里固定 110（含安全区）
-      bottom: 110 + MediaQuery.paddingOf(context).bottom,
+      // 主悬浮底栏：bottom 16 + 高度 64 = top 80 → 这里 90（留 10px 间距）
+      bottom: 90 + MediaQuery.paddingOf(context).bottom,
       child: GlassPill(
         height: 58,
         radius: 29,

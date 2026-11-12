@@ -1874,7 +1874,11 @@ class _SettingsScreenState extends State<_SettingsScreen> {
           gradient: glassCardGradient(),
           border: Border.all(color: glassCardBorder(), width: 1.5),
         ),
-        child: Column(children: children),
+        // stretch：让每行铺满卡片宽度，右侧 › 才能与其它行对齐
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: children,
+        ),
       );
 
   Widget _row(IconData icon, String label, String? value, VoidCallback? onTap) {
@@ -1973,6 +1977,7 @@ class _ThemeModePageState extends State<_ThemeModePage> {
                     border: Border.all(color: glassCardBorder(), width: 1.5),
                   ),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       for (final o in _options)
                         GestureDetector(

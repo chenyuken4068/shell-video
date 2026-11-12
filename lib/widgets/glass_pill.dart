@@ -46,12 +46,14 @@ class GlassPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dark = AppColors.isDark;
+    // 与主界面 LiquidGlassNavBar(matteLight/matteDark) 完全相同的参数：
+    //   tintOpacity = 0.03 + 0.85 * 0.55 ≈ 0.50
+    //   blurSigma   = 8 + 0.55 * 45 ≈ 33
+    //   borderOpacity = 0.55 / borderWidth 1.5
     final bg = dark
-        ? const Color(0xFF12131A).withValues(alpha: .78)
-        : Colors.white.withValues(alpha: .86);
-    final border = dark
-        ? Colors.white.withValues(alpha: .16)
-        : Colors.white.withValues(alpha: .96);
+        ? const Color(0xFF12131A).withValues(alpha: .50)
+        : Colors.white.withValues(alpha: .50);
+    final border = Colors.white.withValues(alpha: .55);
 
     Widget inner = Container(
       height: height,
@@ -62,9 +64,9 @@ class GlassPill extends StatelessWidget {
         border: Border.all(color: border, width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: dark ? .34 : .10),
-            blurRadius: 30,
-            offset: const Offset(0, 10),
+            color: Colors.black.withValues(alpha: dark ? .30 : .12),
+            blurRadius: 24,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
@@ -75,7 +77,7 @@ class GlassPill extends StatelessWidget {
       inner = ClipRRect(
         borderRadius: BorderRadius.circular(radius),
         child: BackdropFilter(
-          filter: ui.ImageFilter.blur(sigmaX: 22, sigmaY: 22),
+          filter: ui.ImageFilter.blur(sigmaX: 33, sigmaY: 33),
           child: inner,
         ),
       );
