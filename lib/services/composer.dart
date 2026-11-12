@@ -447,11 +447,23 @@ class Composer {
     // 实况动态照片：只允许 H.264（Android / 第三方 App 解析动态照片都只认 H.264，
     //   h264_mediacodec 在部分机型产出非标准码流、mpeg4 直接不被支持，
     //   都会导致「setDataSource failed: status = 0x80000000」）
+    // 编码器备选（按可用性排序）：
+    //   本工程 ffmpeg 精简版**没有 libx264**，日志会报 Unknown encoder 'libx264'，
+    //   所以绝不能只押 libx264。实况动态照片要求「标准 H.264」，
+    //   h264_mediacodec（硬件）在多数机型能产出标准 yuv420p H.264，优先试它；
+    //   再退 openh264 / h264 软编；最后才退 mpeg4（第三方 App 可能不认，仅兜底）。
     final attempts = <List<String>>[
-      if (motionPhoto)
+      if (motionPhoto) ...[
+        // ① 硬件 H.264（快、标准码流）
+        ['-c:v', 'h264_mediacodec', '-b:v', '12M', '-pix_fmt', 'yuv420p'],
+        // ② 软编 H.264（部分构建名称为 h264 / openh264）
         ['-c:v', 'libx264', '-preset', 'ultrafast', '-crf', '23',
-          '-pix_fmt', 'yuv420p', '-profile:v', 'high', '-level', '4.0']
-      else ...[
+          '-pix_fmt', 'yuv420p', '-profile:v', 'high', '-level', '4.0'],
+        ['-c:v', 'h264', '-pix_fmt', 'yuv420p'],
+        ['-c:v', 'openh264', '-pix_fmt', 'yuv420p'],
+        // ③ 兜底：MPEG-4（酷安等第三方可能不认，但至少能导出）
+        ['-c:v', 'mpeg4', '-q:v', '3', '-pix_fmt', 'yuv420p'],
+      ] else ...[
         if (preferHardware) ['-c:v', 'h264_mediacodec', '-b:v', '10M', '-bufsize', '20M'],
         ['-c:v', 'libx264', '-preset', 'ultrafast', '-crf', '23', '-pix_fmt', 'yuv420p'],
         ['-c:v', 'mpeg4', '-q:v', '3'],
