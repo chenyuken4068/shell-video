@@ -2335,6 +2335,11 @@ class _ComposeScreenState extends State<ComposeScreen>
           hardware: _hardware,
           fpsOverride: _fpsOverride,
           info: _info,
+          trimStartSec: _liveTrim?.startSec ?? 0,
+          trimDurationSec: _liveTrim == null
+              ? 0
+              : (_liveTrim!.endSec - _liveTrim!.startSec),
+          motionPhoto: true,
           onProgress: (pct, speed) {
             if (!mounted) return;
             setState(() {
@@ -2374,6 +2379,11 @@ class _ComposeScreenState extends State<ComposeScreen>
           fpsOverride: _fpsOverride,
           ratio: _ratio,
           canvasRatio: _canvasRatio,
+          trimStartSec: _liveTrim?.startSec ?? 0,
+          trimDurationSec: _liveTrim == null
+              ? 0
+              : (_liveTrim!.endSec - _liveTrim!.startSec),
+          motionPhoto: true,
           onProgress: (pct, speed) {
             if (!mounted) return;
             setState(() {

@@ -1,16 +1,18 @@
 {
-  "version": "3.3.3",
-  "build": "333",
-  "apkUrl": "https://github.com/chenyuken4068/shell-video/releases/latest/download/ShellVideo_3.3.3.apk",
+  "version": "3.3.4",
+  "build": "334",
+  "apkUrl": "https://github.com/chenyuken4068/shell-video/releases/latest/download/ShellVideo_3.3.4.apk",
   "releaseUrl": "https://github.com/chenyuken4068/shell-video/releases/latest",
   "size": "62 MB",
   "date": "2026-11-12",
   "notes": [
-    ["1", "模板库分组底栏、导入按钮和「其他」弹卡改用与统一的玻璃渲染"],
-    ["2", "优化图库批量操作条悬浮底部栏间距"],
+    ["1", "模板库分组底栏、导入按钮和「其他」弹卡改用统一的玻璃渲染"],
+    ["2", "优化图库批量操作条与底部悬浮栏的间距"],
     ["3", "修复设置页卡片右侧箭头未对齐"],
     ["4", "重新标定 OPPO / vivo 全部机型，屏幕框贴合更准"],
     ["5", "修复 vivo X200 Pro mini 部分颜色屏幕区域偏差较大"],
-    ["6", "优化标定算法"]
+    ["6", "优化屏幕标定算法"],
+    ["7", "修复实况照片裁剪范围没有传给合成"],
+    ["8", "修复实况动态照片编码，导出统一使用标准 H.264，解决上传酷安报错问题"]
   ]
 }

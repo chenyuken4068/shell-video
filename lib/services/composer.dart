@@ -31,6 +31,12 @@ class Composer {
     Quality quality = Quality.original,
     /// 导出帧率；0 = 用视频探测帧率
     int fpsOverride = 0,
+    /// 裁剪起点（秒）
+    double trimStartSec = 0,
+    /// 裁剪时长（秒）：0 = 到结尾
+    double trimDurationSec = 0,
+    /// 实况动态照片：强制 H.264（Android 解析动态照片只认 H.264）
+    bool motionPhoto = false,
     double ratio = 1.0,
     double canvasRatio = 0,
     String? bgImagePath,
@@ -145,6 +151,9 @@ class Composer {
     final base = [
       '-y',
       '-hwaccel', 'auto',
+      // 裁剪：-ss 放在 -i 之前（输入定位，快速且准确）
+      if (trimStartSec > 0)
+        ...['-ss', trimStartSec.toStringAsFixed(3)],
       '-i', _q(videoPath),
       '-i', _q(template.casePath),
       '-i', _q(maskPath),
@@ -155,6 +164,9 @@ class Composer {
       '-r', fps.toStringAsFixed(3),
       '-c:a', 'aac',
       '-b:a', '160k',
+      // 裁剪时长（-t 在输入之后 = 限制输出时长）
+      if (trimDurationSec > 0)
+        ...['-t', trimDurationSec.toStringAsFixed(3)],
       '-movflags', '+faststart',
       // 输出进度到 stdout，SDK 据此触发 Statistics 回调（否则进度恒为 0/100）
       '-progress', 'pipe:1',
@@ -165,6 +177,7 @@ class Composer {
       outputPath: outputPath,
       duration: duration,
       preferHardware: hardware,
+      motionPhoto: motionPhoto,
       onProgress: onProgress,
       onLog: onLog,
     );
@@ -424,16 +437,25 @@ class Composer {
   /// `Unknown encoder` 属于立即失败，逐个换掉几乎不耗时。
   static Future<bool> _encodeVideo({
     required List<String> base,
+    bool motionPhoto = false,
     required String outputPath,
     required double duration,
     required bool preferHardware,
     void Function(double progress, String speed)? onProgress,
     void Function(String log)? onLog,
   }) async {
+    // 实况动态照片：只允许 H.264（Android / 第三方 App 解析动态照片都只认 H.264，
+    //   h264_mediacodec 在部分机型产出非标准码流、mpeg4 直接不被支持，
+    //   都会导致「setDataSource failed: status = 0x80000000」）
     final attempts = <List<String>>[
-      if (preferHardware) ['-c:v', 'h264_mediacodec', '-b:v', '10M', '-bufsize', '20M'],
-      ['-c:v', 'libx264', '-preset', 'ultrafast', '-crf', '23'],
-      ['-c:v', 'mpeg4', '-q:v', '3'],
+      if (motionPhoto)
+        ['-c:v', 'libx264', '-preset', 'ultrafast', '-crf', '23',
+          '-pix_fmt', 'yuv420p', '-profile:v', 'high', '-level', '4.0']
+      else ...[
+        if (preferHardware) ['-c:v', 'h264_mediacodec', '-b:v', '10M', '-bufsize', '20M'],
+        ['-c:v', 'libx264', '-preset', 'ultrafast', '-crf', '23', '-pix_fmt', 'yuv420p'],
+        ['-c:v', 'mpeg4', '-q:v', '3'],
+      ],
     ];
     for (var i = 0; i < attempts.length; i++) {
       final ok = await _run(
@@ -517,6 +539,12 @@ class Composer {
     bool hardware = true,
     /// 导出帧率；0 = 用视频探测帧率
     int fpsOverride = 0,
+    /// 裁剪起点（秒）
+    double trimStartSec = 0,
+    /// 裁剪时长（秒）：0 = 到结尾
+    double trimDurationSec = 0,
+    /// 实况动态照片：强制 H.264（Android 解析动态照片只认 H.264）
+    bool motionPhoto = false,
     void Function(double progress, String speed)? onProgress,
     void Function(String log)? onLog,
     double shellDx = 0,
@@ -646,6 +674,9 @@ class Composer {
         : <String>['-i', _q(bgPath)];
     final inputs = [
       '-y',
+      // 裁剪起点：-ss 紧跟在其后要打开的输入之前（此处为内容视频）
+      if (hasContent && trimStartSec > 0)
+        ...['-ss', trimStartSec.toStringAsFixed(3)],
       if (hasContent) ...['-i', _q(contentPath)],
       '-i', _q(template.casePath),
       '-i', _q(maskPath),
@@ -661,7 +692,10 @@ class Composer {
         '-r', fps.toStringAsFixed(3),
         '-c:a', 'aac',
         '-b:a', '160k',
-        '-movflags', '+faststart',
+        // 裁剪时长（-t 在输入之后 = 限制输出时长）
+      if (trimDurationSec > 0)
+        ...['-t', trimDurationSec.toStringAsFixed(3)],
+      '-movflags', '+faststart',
         '-progress', 'pipe:1',
         // 时长没读到时背景源兜到 60 秒，用 -shortest 收在内容结束处，避免 60 秒定格画面
         if (!durKnown) '-shortest',
