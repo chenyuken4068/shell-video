@@ -120,7 +120,7 @@ class TemplateStore {
   /// 一次性迁移（v2）：把内置模板的标定重写为 assets 的实测值。
   /// 只执行一次（用标记文件），之后不再改动任何标定。
   Future<void> _migrateCalibrationOnce(Directory root) async {
-    final flag = File(p.join(root.path, '.calib_v5'));
+    final flag = File(p.join(root.path, '.calib_v6'));
     if (await flag.exists()) return;
     try {
       final indexFile = File(p.join(root.path, _indexName));
