@@ -1882,6 +1882,7 @@ class _SettingsScreenState extends State<_SettingsScreen> {
       );
 
   Widget _row(IconData icon, String label, String? value, VoidCallback? onTap) {
+    // 右侧统一结构：值（定宽右对齐）+ 箭头位（无箭头也占位）→ 所有行箭头严格对齐
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: onTap,
@@ -1892,21 +1893,31 @@ class _SettingsScreenState extends State<_SettingsScreen> {
             Icon(icon, size: 20, color: AppColors.accent),
             const SizedBox(width: 12),
             Expanded(
+              flex: 1,
               child: Text(label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                       fontSize: 14, fontWeight: FontWeight.w700)),
             ),
             if (value != null)
-              Flexible(
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 160),
                 child: Text(value,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.right,
                     style: TextStyle(fontSize: 12, color: AppColors.textSub)),
               ),
-            if (onTap != null) ...[
-              const SizedBox(width: 4),
-              Icon(Icons.chevron_right, size: 20, color: AppColors.textFaint),
-            ],
+            // 箭头：固定 20px + 左间距 6；无箭头时用等宽留白占位
+            const SizedBox(width: 6),
+            SizedBox(
+              width: 20,
+              child: onTap != null
+                  ? Icon(Icons.chevron_right,
+                      size: 20, color: AppColors.textFaint)
+                  : null,
+            ),
           ],
         ),
       ),

@@ -1,6 +1,7 @@
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import '../services/motion_probe.dart';
+import '../widgets/app_glass.dart';
 import '../widgets/glass_pill.dart';
 import '../widgets/media_card.dart';
 
@@ -553,7 +554,7 @@ class LibraryScreenState extends State<LibraryScreen> {
       right: 16,
       // 主悬浮底栏：bottom 16 + 高度 64 = top 80 → 这里 90（留 10px 间距）
       bottom: 90 + MediaQuery.paddingOf(context).bottom,
-      child: GlassPill(
+      child: AppGlass(
         height: 58,
         radius: 29,
         child: Row(

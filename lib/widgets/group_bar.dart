@@ -1,6 +1,8 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+
+import 'app_glass.dart';
 import 'package:flutter/services.dart';
 
 /// 模板库「分组悬浮底栏」
@@ -132,33 +134,10 @@ class _GroupBarState extends State<GroupBar> with SingleTickerProviderStateMixin
                   final next = (_pillIndex + (_dragDx > 0 ? 1 : -1)).clamp(0, 3);
                   _tapItem(items[next]);
                 },
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(32),
-                  child: BackdropFilter(
-                    // 与主界面悬浮底栏（LiquidGlassNavBar matte）完全一致的参数：
-                    // tint 0.50 / blur 33 / border 0.55 1.5px
-                    filter: ImageFilter.blur(sigmaX: 33, sigmaY: 33),
-                    child: Container(
-                      height: _h,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(32),
-                        color: dark
-                            ? const Color(0xFF12131A).withValues(alpha: .50)
-                            : Colors.white.withValues(alpha: .50),
-                        border: Border.all(
-                          color: Colors.white.withValues(alpha: .55),
-                          width: 1.5,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black
-                                .withValues(alpha: dark ? .34 : .10),
-                            blurRadius: 30,
-                            offset: const Offset(0, 10),
-                          ),
-                        ],
-                      ),
-                      child: Stack(
+                child: AppGlass(
+                    radius: 32,
+                    height: _h,
+                    child: Stack(
                         children: [
                           // ① 会滑动的胶囊（同主界面手感）
                           AnimatedPositioned(
@@ -207,9 +186,7 @@ class _GroupBarState extends State<GroupBar> with SingleTickerProviderStateMixin
                           ),
                         ],
                       ),
-                    ),
                   ),
-                ),
               );
             }),
           ),
@@ -220,41 +197,18 @@ class _GroupBarState extends State<GroupBar> with SingleTickerProviderStateMixin
               HapticFeedback.selectionClick();
               widget.onImport();
             },
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(32),
-              child: BackdropFilter(
-                // 与底栏 / 主界面底栏同一套：blur 33
-                filter: ImageFilter.blur(sigmaX: 33, sigmaY: 33),
-                child: Container(
-                  width: _h,
-                  height: _h,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(32),
-                    color: dark
-                        ? const Color(0xFF12131A).withValues(alpha: .50)
-                        : Colors.white.withValues(alpha: .50),
-                    border: Border.all(
-                      color: Colors.white.withValues(alpha: .55),
-                      width: 1.5,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black
-                            .withValues(alpha: dark ? .30 : .12),
-                        blurRadius: 24,
-                        offset: const Offset(0, 8),
-                      ),
-                    ],
-                  ),
-                  child: Icon(
+            child: AppGlass(
+                radius: 32,
+                width: _h,
+                height: _h,
+                child: Center(
+                child: Icon(
                     Icons.add,
                     size: 28,
                     color: dark ? Colors.white : const Color(0xFF111214),
                   ),
-                ),
               ),
-            ),
+              ),
           ),
         ],
       ),
@@ -301,31 +255,10 @@ class _GroupBarState extends State<GroupBar> with SingleTickerProviderStateMixin
             },
             child: Material(
               type: MaterialType.transparency,
-              child: ClipRRect(
-              borderRadius: BorderRadius.circular(20),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 33, sigmaY: 33),
-                child: Container(
-                  padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: dark
-                        ? const Color(0xFF12131A).withValues(alpha: .50)
-                        : Colors.white.withValues(alpha: .50),
-                    border: Border.all(
-                      color: Colors.white.withValues(alpha: .55),
-                      width: 1.5,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black
-                            .withValues(alpha: dark ? .30 : .12),
-                        blurRadius: 24,
-                        offset: const Offset(0, 8),
-                      ),
-                    ],
-                  ),
-                  child: Column(
+              child: AppGlass(
+                radius: 20,
+                padding: const EdgeInsets.all(12),
+                child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -358,9 +291,7 @@ class _GroupBarState extends State<GroupBar> with SingleTickerProviderStateMixin
                         ),
                     ],
                   ),
-                ),
               ),
-            ),
             ),
           ),
         ),
