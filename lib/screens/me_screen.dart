@@ -917,17 +917,14 @@ class _SettingsSheetState extends State<_SettingsSheet> {
 
   late bool _autoSaveBg = widget.initial.autoSaveBg;
 
-  /// 改动即生效 + 立刻写盘（已去掉取消/保存按钮）
+  /// 改动即生效 + 立刻写盘（**只改本页字段**，其它设置保留）
   Future<void> _apply() async {
-    await SettingsStore().save(AppSettings(
-      background: widget.initial.background,
+    final cur = await SettingsStore().load();
+    await SettingsStore().save(cur.copyWith(
       quality: _quality,
       hardware: _hardware,
       fps: _fps,
       autoSaveBg: _autoSaveBg,
-      navGlass: widget.initial.navGlass,
-      navGlassOpacity: widget.initial.navGlassOpacity,
-      themeMode: widget.initial.themeMode,
     ));
   }
 
@@ -1187,21 +1184,15 @@ class _GeneralSheetState extends State<_GeneralSheet> {
 
   /// 改动即生效 + 立刻写盘（已去掉取消/保存按钮）
   void _apply() {
-    final s = AppSettings(
-      background: widget.initial.background,
-      quality: widget.initial.quality,
-      hardware: widget.initial.hardware,
-      fps: widget.initial.fps,
-      autoSaveBg: widget.initial.autoSaveBg,
-      autoPickBg: _autoPick,
-      navGlass: _glass,
-      navGlassOpacity: _opacity,
-      themeMode: _mode,
-    );
     gNavGlass.value = _glass;
     gNavGlassOpacity.value = _opacity;
     gThemeMode.value = AppTheme.parse(_mode);
-    SettingsStore().save(s);
+    SettingsStore().load().then((cur) => SettingsStore().save(cur.copyWith(
+          autoPickBg: _autoPick,
+          navGlass: _glass,
+          navGlassOpacity: _opacity,
+          themeMode: _mode,
+        )));
   }
 
 
@@ -1497,20 +1488,7 @@ Future<void> showHomeSortSheet(BuildContext context) async {
       hidden: List<String>.from(s.homeHidden),
       onChanged: (o, h) async {
         final cur = await SettingsStore().load();
-        await SettingsStore().save(AppSettings(
-          background: cur.background,
-          quality: cur.quality,
-          hardware: cur.hardware,
-          fps: cur.fps,
-          autoSaveBg: cur.autoSaveBg,
-          navGlass: cur.navGlass,
-          navGlassOpacity: cur.navGlassOpacity,
-          themeMode: cur.themeMode,
-          tplGroups: cur.tplGroups,
-          tplHidden: cur.tplHidden,
-          homeOrder: o,
-          homeHidden: h,
-        ));
+        await SettingsStore().save(cur.copyWith(homeOrder: o, homeHidden: h));
         gHomeOrder.value = List<String>.from(o);
         gHomeHidden.value = List<String>.from(h);
       },
@@ -2072,21 +2050,8 @@ class _TplSortPageState extends State<_TplSortPage> {
 
   Future<void> _save() async {
     final s = await SettingsStore().load();
-    await SettingsStore().save(AppSettings(
-      background: s.background,
-      quality: s.quality,
-      hardware: s.hardware,
-      fps: s.fps,
-      autoSaveBg: s.autoSaveBg,
-      autoPickBg: s.autoPickBg,
-      navGlass: s.navGlass,
-      navGlassOpacity: s.navGlassOpacity,
-      themeMode: s.themeMode,
-      tplGroups: _order,
-      tplHidden: _hidden.toList(),
-      homeOrder: s.homeOrder,
-      homeHidden: s.homeHidden,
-    ));
+    await SettingsStore().save(
+        s.copyWith(tplGroups: _order, tplHidden: _hidden.toList()));
     gTplGroups.value = _order;
     gTplHidden.value = _hidden.toList();
   }
@@ -2096,12 +2061,8 @@ class _TplSortPageState extends State<_TplSortPage> {
       _order = <String>[];
       _hidden = <String>{};
     });
-    await SettingsStore().save(AppSettings(
-      tplGroups: const [],
-      tplHidden: const [],
-    ));
-    gTplGroups.value = <String>[];
-    gTplHidden.value = <String>[];
+    // ⚠️ 不能 new 一个默认 AppSettings 覆盖：那把其它设置全清空了
+    await _save();
     if (mounted) Navigator.pop(context);
   }
 
@@ -2149,21 +2110,8 @@ class _HomeSortPageState extends State<_HomeSortPage> {
 
   Future<void> _save() async {
     final s = await SettingsStore().load();
-    await SettingsStore().save(AppSettings(
-      background: s.background,
-      quality: s.quality,
-      hardware: s.hardware,
-      fps: s.fps,
-      autoSaveBg: s.autoSaveBg,
-      autoPickBg: s.autoPickBg,
-      navGlass: s.navGlass,
-      navGlassOpacity: s.navGlassOpacity,
-      themeMode: s.themeMode,
-      tplGroups: s.tplGroups,
-      tplHidden: s.tplHidden,
-      homeOrder: _order,
-      homeHidden: _hidden.toList(),
-    ));
+    await SettingsStore().save(
+        s.copyWith(homeOrder: _order, homeHidden: _hidden.toList()));
     gHomeOrder.value = _order;
     gHomeHidden.value = _hidden.toList();
   }

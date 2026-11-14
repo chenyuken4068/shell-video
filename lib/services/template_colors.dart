@@ -106,10 +106,206 @@ const Map<String, List<ColorVariant>> kColorVariants = {
     ColorVariant('大地回声', 'builtin_vivo_vivox500_v21', 0xFF9A9FA6),
     ColorVariant('摄夜', 'builtin_vivo_vivox500_v22', 0xFF323538),
   ],
+    // ── iQOO 15 ──
+    'builtin_iqoo15_chuanqi': [
+      ColorVariant('传奇版', 'builtin_iqoo15_chuanqi', 0xFFC8C8C8),
+      ColorVariant('凌云', 'builtin_iqoo15_lingyun', 0xFF999D9F),
+      ColorVariant('旷野', 'builtin_iqoo15_kuangye', 0xFFC0C6A3),
+      ColorVariant('王者荣耀十周年典藏版', 'builtin_iqoo15_wangzhe', 0xFF6C6E71),
+      ColorVariant('赛道版', 'builtin_iqoo15_saidao', 0xFF6B6D70),
+    ],
+    // ── iQOO 15 Ultra ──
+    'builtin_iqoo15ultra_silver2049': [
+      ColorVariant('2049银色', 'builtin_iqoo15ultra_silver2049', 0xFF72757D),
+      ColorVariant('2077黑色', 'builtin_iqoo15ultra_black2077', 0xFF545557),
+    ],
+    // ── iQOO 16 ──
+    'builtin_iqoo16_chuanqi': [
+      ColorVariant('传奇', 'builtin_iqoo16_chuanqi', 0xFFC2C2C1),
+      ColorVariant('赛道', 'builtin_iqoo16_saidao', 0xFF514F5F),
+      ColorVariant('逐光', 'builtin_iqoo16_zhuguang', 0xFFC4C1BD),
+    ],
+    // ── 一加 16 ──
+    'builtin_oneplus16_mingri': [
+      ColorVariant('明日星光', 'builtin_oneplus16_mingri', 0xFF95989F),
+      ColorVariant('火星杰作', 'builtin_oneplus16_huoxing', 0xFFD4A08D),
+      ColorVariant('黑暗森林', 'builtin_oneplus16_heian', 0xFF4E525C),
+    ],
+    // ── 一加 15T ──
+    'builtin_oneplus15t_zhiyu': [
+      ColorVariant('治愈白巧', 'builtin_oneplus15t_zhiyu', 0xFFC8C8C3),
+      ColorVariant('松弛抹茶', 'builtin_oneplus15t_songchi', 0xFF909D79),
+      ColorVariant('纯粹可可', 'builtin_oneplus15t_chuncui', 0xFF564F50),
+    ],
+    // ── 一加 15 ──
+    'builtin_oneplus15_yuansha': [
+      ColorVariant('原色沙丘', 'builtin_oneplus15_yuansha', 0xFFB6ADA4),
+      ColorVariant('绝对黑', 'builtin_oneplus15_juedui', 0xFF4B4E51),
+      ColorVariant('雾光紫', 'builtin_oneplus15_wuguang', 0xFFA39AA9),
+    ],
+    // ── 一加 13T ──
+    'builtin_oneplus13t_chenwu': [
+      ColorVariant('晨雾灰', 'builtin_oneplus13t_chenwu', 0xFF94979C),
+      ColorVariant('云墨黑', 'builtin_oneplus13t_yunmo', 0xFF4E4E4D),
+      ColorVariant('怦然粉', 'builtin_oneplus13t_pengran', 0xFFAA9FA5),
+    ],
+    // ── 一加 13 ──
+    'builtin_oneplus13_bailu': [
+      ColorVariant('白露晨曦', 'builtin_oneplus13_bailu', 0xFF808080),
+      ColorVariant('蓝调时刻', 'builtin_oneplus13_landiao', 0xFF828283),
+      ColorVariant('黑曜秘境', 'builtin_oneplus13_heiyao', 0xFF757575),
+    ],
+    // ── 真我 GT8 Pro ──
+    'builtin_realme_gt8pro_white': [
+      ColorVariant('怀特', 'builtin_realme_gt8pro_white', 0xFF9E9E9C),
+      ColorVariant('布鲁', 'builtin_realme_gt8pro_blue', 0xFF616A7C),
+      ColorVariant('格林', 'builtin_realme_gt8pro_green', 0xFF92A099),
+      ColorVariant('阿斯顿马丁绿', 'builtin_realme_gt8pro_amg', 0xFF539481),
+    ],
+    // ── 真我 GT8 ──
+    'builtin_realme_gt8_white': [
+      ColorVariant('怀特', 'builtin_realme_gt8_white', 0xFF9F9F9F),
+      ColorVariant('格林', 'builtin_realme_gt8_green', 0xFF8D9F95),
+      ColorVariant('纳维', 'builtin_realme_gt8_navy', 0xFF5C6479),
+    ],
+    // ── 三星 Galaxy S26 Ultra ──
+    'builtin_samsung_s26u_xingshuang': [
+      ColorVariant('星霜白', 'builtin_samsung_s26u_xingshuang', 0xFFAEAFB3),
+      ColorVariant('星暮紫', 'builtin_samsung_s26u_xingmu', 0xFF585A7A),
+      ColorVariant('星曜黑', 'builtin_samsung_s26u_xingyao', 0xFF45494D),
+      ColorVariant('星月银', 'builtin_samsung_s26u_xingyue', 0xFF9FA0A3),
+      ColorVariant('星澄蓝', 'builtin_samsung_s26u_xingcheng', 0xFFB5C2CF),
+      ColorVariant('星瑰金', 'builtin_samsung_s26u_xinggui', 0xFFE5D6CD),
+    ],
+    // ── 三星 Galaxy S25 Ultra ──
+    'builtin_samsung_s25u_tiyin': [
+      ColorVariant('钛银蓝', 'builtin_samsung_s25u_tiyin', 0xFFAEAEB0),
+      ColorVariant('钛墨黑', 'builtin_samsung_s25u_timo', 0xFF575A62),
+      ColorVariant('钛影黑', 'builtin_samsung_s25u_tiying', 0xFFABA5A1),
+      ColorVariant('钛柔金', 'builtin_samsung_s25u_tirou', 0xFFABA5A1),
+      ColorVariant('钛翡绿', 'builtin_samsung_s25u_tifei', 0xFFABA5A1),
+      ColorVariant('钛辉银', 'builtin_samsung_s25u_tihuibyin', 0xFFAEAEB0),
+      ColorVariant('钛雾灰', 'builtin_samsung_s25u_tiwu', 0xFFABA5A1),
+    ],
+    // ── 三星 Galaxy S24 Ultra ──
+    'builtin_samsung_s24u_timu': [
+      ColorVariant('钛暮紫', 'builtin_samsung_s24u_timu', 0xFF7E7772),
+      ColorVariant('钛岭绿', 'builtin_samsung_s24u_tiling', 0xFF686765),
+      ColorVariant('钛川蓝', 'builtin_samsung_s24u_tichuan', 0xFF686765),
+      ColorVariant('钛灰', 'builtin_samsung_s24u_tihui', 0xFF7D7671),
+      ColorVariant('钛羽黄', 'builtin_samsung_s24u_tiyu', 0xFF898166),
+      ColorVariant('钛霞橙', 'builtin_samsung_s24u_tixia', 0xFF89827C),
+      ColorVariant('钛黑', 'builtin_samsung_s24u_tihei', 0xFF676563),
+    ],
+    // ── 荣耀 Magic9 Pro Max ──
+    'builtin_honor_magic9pm_yinyan': [
+      ColorVariant('银盐', 'builtin_honor_magic9pm_yinyan', 0xFFA8AAAA),
+      ColorVariant('影黑', 'builtin_honor_magic9pm_yinghei', 0xFF57595B),
+      ColorVariant('苔青', 'builtin_honor_magic9pm_taiqing', 0xFFAFB983),
+    ],
+    // ── 荣耀 Magic9 超能版 ──
+    'builtin_honor_magic9x_kaichang': [
+      ColorVariant('开场白', 'builtin_honor_magic9x_kaichang', 0xFF999B9E),
+      ColorVariant('幕布黑', 'builtin_honor_magic9x_mubu', 0xFF595B62),
+      ColorVariant('橄榄青', 'builtin_honor_magic9x_ganlan', 0xFF8F9D9E),
+      ColorVariant('爆米黄', 'builtin_honor_magic9x_baomi', 0xFFA89255),
+    ],
+    // ── 荣耀 Magic9 ──
+    'builtin_honor_magic9_kaichang': [
+      ColorVariant('开场白', 'builtin_honor_magic9_kaichang', 0xFF9A9B9E),
+      ColorVariant('幕布黑', 'builtin_honor_magic9_mubu', 0xFF595B63),
+      ColorVariant('橄榄青', 'builtin_honor_magic9_ganlan', 0xFF8BA09E),
+      ColorVariant('爆米黄', 'builtin_honor_magic9_baomi', 0xFFAE8E52),
+    ],
+    // ── 荣耀 Magic8 Pro ──
+    'builtin_honor_magic8p_xuebai': [
+      ColorVariant('雪域白', 'builtin_honor_magic8p_xuebai', 0xFF8D8D8D),
+      ColorVariant('天青色', 'builtin_honor_magic8p_tianqing', 0xFF8C9496),
+      ColorVariant('旭日金砂', 'builtin_honor_magic8p_xuri', 0xFF928D85),
+      ColorVariant('绒黑色', 'builtin_honor_magic8p_ronghei', 0xFF87898B),
+    ],
+    // ── 荣耀 Magic8 ──
+    'builtin_honor_magic8_xuebai': [
+      ColorVariant('雪域白', 'builtin_honor_magic8_xuebai', 0xFF8E8E8E),
+      ColorVariant('天青釉', 'builtin_honor_magic8_tianqing', 0xFF646665),
+      ColorVariant('旭日金', 'builtin_honor_magic8_xuri', 0xFF89827A),
+      ColorVariant('绒黑色', 'builtin_honor_magic8_ronghei', 0xFF747475),
+    ],
 };
 
 /// 模板库展示图（正反图）: templateId → assets 路径
 const Map<String, String> kTemplateDisplayFile = {
+  'builtin_honor_magic9pm_yinyan': 'assets/templates/honor_magic9pm_yinyan_display.png',
+  'builtin_honor_magic9pm_yinghei': 'assets/templates/honor_magic9pm_yinghei_display.png',
+  'builtin_honor_magic9pm_taiqing': 'assets/templates/honor_magic9pm_taiqing_display.png',
+  'builtin_honor_magic9x_kaichang': 'assets/templates/honor_magic9x_kaichang_display.png',
+  'builtin_honor_magic9x_mubu': 'assets/templates/honor_magic9x_mubu_display.png',
+  'builtin_honor_magic9x_ganlan': 'assets/templates/honor_magic9x_ganlan_display.png',
+  'builtin_honor_magic9x_baomi': 'assets/templates/honor_magic9x_baomi_display.png',
+  'builtin_honor_magic9_kaichang': 'assets/templates/honor_magic9_kaichang_display.png',
+  'builtin_honor_magic9_mubu': 'assets/templates/honor_magic9_mubu_display.png',
+  'builtin_honor_magic9_ganlan': 'assets/templates/honor_magic9_ganlan_display.png',
+  'builtin_honor_magic9_baomi': 'assets/templates/honor_magic9_baomi_display.png',
+  'builtin_honor_magic8p_xuebai': 'assets/templates/honor_magic8p_xuebai_display.png',
+  'builtin_honor_magic8p_tianqing': 'assets/templates/honor_magic8p_tianqing_display.png',
+  'builtin_honor_magic8p_xuri': 'assets/templates/honor_magic8p_xuri_display.png',
+  'builtin_honor_magic8p_ronghei': 'assets/templates/honor_magic8p_ronghei_display.png',
+  'builtin_honor_magic8_xuebai': 'assets/templates/honor_magic8_xuebai_display.png',
+  'builtin_honor_magic8_tianqing': 'assets/templates/honor_magic8_tianqing_display.png',
+  'builtin_honor_magic8_xuri': 'assets/templates/honor_magic8_xuri_display.png',
+  'builtin_honor_magic8_ronghei': 'assets/templates/honor_magic8_ronghei_display.png',
+  'builtin_samsung_s26u_xingshuang': 'assets/templates/samsung_s26u_xingshuang_display.png',
+  'builtin_samsung_s26u_xingmu': 'assets/templates/samsung_s26u_xingmu_display.png',
+  'builtin_samsung_s26u_xingyao': 'assets/templates/samsung_s26u_xingyao_display.png',
+  'builtin_samsung_s26u_xingyue': 'assets/templates/samsung_s26u_xingyue_display.png',
+  'builtin_samsung_s26u_xingcheng': 'assets/templates/samsung_s26u_xingcheng_display.png',
+  'builtin_samsung_s26u_xinggui': 'assets/templates/samsung_s26u_xinggui_display.png',
+  'builtin_samsung_s25u_tiyin': 'assets/templates/samsung_s25u_tiyin_display.png',
+  'builtin_samsung_s25u_timo': 'assets/templates/samsung_s25u_timo_display.png',
+  'builtin_samsung_s25u_tiying': 'assets/templates/samsung_s25u_tiying_display.png',
+  'builtin_samsung_s25u_tirou': 'assets/templates/samsung_s25u_tirou_display.png',
+  'builtin_samsung_s25u_tifei': 'assets/templates/samsung_s25u_tifei_display.png',
+  'builtin_samsung_s25u_tihuibyin': 'assets/templates/samsung_s25u_tihuibyin_display.png',
+  'builtin_samsung_s25u_tiwu': 'assets/templates/samsung_s25u_tiwu_display.png',
+  'builtin_samsung_s24u_timu': 'assets/templates/samsung_s24u_timu_display.png',
+  'builtin_samsung_s24u_tiling': 'assets/templates/samsung_s24u_tiling_display.png',
+  'builtin_samsung_s24u_tichuan': 'assets/templates/samsung_s24u_tichuan_display.png',
+  'builtin_samsung_s24u_tihui': 'assets/templates/samsung_s24u_tihui_display.png',
+  'builtin_samsung_s24u_tiyu': 'assets/templates/samsung_s24u_tiyu_display.png',
+  'builtin_samsung_s24u_tixia': 'assets/templates/samsung_s24u_tixia_display.png',
+  'builtin_samsung_s24u_tihei': 'assets/templates/samsung_s24u_tihei_display.png',
+  'builtin_realme_gt8pro_white': 'assets/templates/realme_gt8pro_white_display.png',
+  'builtin_realme_gt8pro_blue': 'assets/templates/realme_gt8pro_blue_display.png',
+  'builtin_realme_gt8pro_green': 'assets/templates/realme_gt8pro_green_display.png',
+  'builtin_realme_gt8pro_amg': 'assets/templates/realme_gt8pro_amg_display.png',
+  'builtin_realme_gt8_white': 'assets/templates/realme_gt8_white_display.png',
+  'builtin_realme_gt8_green': 'assets/templates/realme_gt8_green_display.png',
+  'builtin_realme_gt8_navy': 'assets/templates/realme_gt8_navy_display.png',
+  'builtin_oneplus16_mingri': 'assets/templates/oneplus16_mingri_display.png',
+  'builtin_oneplus16_huoxing': 'assets/templates/oneplus16_huoxing_display.png',
+  'builtin_oneplus16_heian': 'assets/templates/oneplus16_heian_display.png',
+  'builtin_oneplus15t_zhiyu': 'assets/templates/oneplus15t_zhiyu_display.png',
+  'builtin_oneplus15t_songchi': 'assets/templates/oneplus15t_songchi_display.png',
+  'builtin_oneplus15t_chuncui': 'assets/templates/oneplus15t_chuncui_display.png',
+  'builtin_oneplus15_yuansha': 'assets/templates/oneplus15_yuansha_display.png',
+  'builtin_oneplus15_juedui': 'assets/templates/oneplus15_juedui_display.png',
+  'builtin_oneplus15_wuguang': 'assets/templates/oneplus15_wuguang_display.png',
+  'builtin_oneplus13t_chenwu': 'assets/templates/oneplus13t_chenwu_display.png',
+  'builtin_oneplus13t_yunmo': 'assets/templates/oneplus13t_yunmo_display.png',
+  'builtin_oneplus13t_pengran': 'assets/templates/oneplus13t_pengran_display.png',
+  'builtin_oneplus13_bailu': 'assets/templates/oneplus13_bailu_display.png',
+  'builtin_oneplus13_landiao': 'assets/templates/oneplus13_landiao_display.png',
+  'builtin_oneplus13_heiyao': 'assets/templates/oneplus13_heiyao_display.png',
+  'builtin_iqoo16_chuanqi': 'assets/templates/iqoo16_chuanqi_display.png',
+  'builtin_iqoo16_saidao': 'assets/templates/iqoo16_saidao_display.png',
+  'builtin_iqoo16_zhuguang': 'assets/templates/iqoo16_zhuguang_display.png',
+  'builtin_iqoo15_chuanqi': 'assets/templates/iqoo15_chuanqi_display.png',
+  'builtin_iqoo15_lingyun': 'assets/templates/iqoo15_lingyun_display.png',
+  'builtin_iqoo15_kuangye': 'assets/templates/iqoo15_kuangye_display.png',
+  'builtin_iqoo15_wangzhe': 'assets/templates/iqoo15_wangzhe_display.png',
+  'builtin_iqoo15_saidao': 'assets/templates/iqoo15_saidao_display.png',
+  'builtin_iqoo15ultra_silver2049': 'assets/templates/iqoo15ultra_silver2049_display.png',
+  'builtin_iqoo15ultra_black2077': 'assets/templates/iqoo15ultra_black2077_display.png',
   'builtin_oppo_findx10promax_warmorange': 'assets/templates/oppo_findx10promax_warmorange_display.png',
   'builtin_oppo_findx10promax_moonwhite': 'assets/templates/oppo_findx10promax_moonwhite_display.png',
   'builtin_oppo_findx10promax_lighttitanium': 'assets/templates/oppo_findx10promax_lighttitanium_display.png',

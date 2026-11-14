@@ -23,11 +23,9 @@ class MotionPhotoExporter {
     final jpeg = await File(jpegPath).readAsBytes();
     final mp4 = await File(videoPath).readAsBytes();
 
-    // GainMap 占位：复用同一张 JPEG（相册只认结构，不校验增益图内容）
-    final gain = jpeg;
-
+    // ⚠️ 不再追加 GainMap：酷安/多数解析器把「主图 JPEG 结束处」当成视频起点，
+    //    中间夹一张 GainMap 会让它把 GainMap 当成视频开头 → setDataSource 0x80000000
     final xmp = _oppoXmp(
-      gainLen: gain.length,
       mp4Len: mp4.length,
       coverUs: coverMs <= 0 ? 0 : coverMs * 1000,
     );
@@ -51,7 +49,6 @@ class MotionPhotoExporter {
 
     final out = BytesBuilder()
       ..add(primary.toBytes())
-      ..add(gain)
       ..add(mp4);
 
     final f = File(outPath);
@@ -68,7 +65,6 @@ class MotionPhotoExporter {
   }
 
   static String _oppoXmp({
-    required int gainLen,
     required int mp4Len,
     required int coverUs,
   }) {
@@ -96,13 +92,6 @@ class MotionPhotoExporter {
               Item:Mime="image/jpeg"
               Item:Semantic="Primary"
               Item:Length="0"
-              Item:Padding="0"/>
-          </rdf:li>
-          <rdf:li rdf:parseType="Resource">
-            <Container:Item
-              Item:Mime="image/jpeg"
-              Item:Semantic="GainMap"
-              Item:Length="$gainLen"
               Item:Padding="0"/>
           </rdf:li>
           <rdf:li rdf:parseType="Resource">

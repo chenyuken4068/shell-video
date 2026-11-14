@@ -45,6 +45,40 @@ class AppSettings {
     this.homeHidden = const [],
   });
 
+  /// 只改指定字段，其余保持（**关键**：避免局部保存把其它设置清成默认值）
+  AppSettings copyWith({
+    String? background,
+    Quality? quality,
+    bool? hardware,
+    int? fps,
+    bool? autoSaveBg,
+    bool? autoPickBg,
+    bool? bootAnim,
+    String? navGlass,
+    double? navGlassOpacity,
+    String? themeMode,
+    List<String>? tplGroups,
+    List<String>? tplHidden,
+    List<String>? homeOrder,
+    List<String>? homeHidden,
+  }) =>
+      AppSettings(
+        background: background ?? this.background,
+        quality: quality ?? this.quality,
+        hardware: hardware ?? this.hardware,
+        fps: fps ?? this.fps,
+        autoSaveBg: autoSaveBg ?? this.autoSaveBg,
+        autoPickBg: autoPickBg ?? this.autoPickBg,
+        bootAnim: bootAnim ?? this.bootAnim,
+        navGlass: navGlass ?? this.navGlass,
+        navGlassOpacity: navGlassOpacity ?? this.navGlassOpacity,
+        themeMode: themeMode ?? this.themeMode,
+        tplGroups: tplGroups ?? this.tplGroups,
+        tplHidden: tplHidden ?? this.tplHidden,
+        homeOrder: homeOrder ?? this.homeOrder,
+        homeHidden: homeHidden ?? this.homeHidden,
+      );
+
   String get bgLabel => background == 'white' ? '白底' : '黑底';
   String get qualityLabel => switch (quality) {
         Quality.original => '原画质',
@@ -125,7 +159,8 @@ class SettingsStore {
 
   Future<void> save(AppSettings s) async {
     final f = await _file();
-    await f.writeAsString(jsonEncode(s.toJson()));
+    // flush: true —— 保证杀进程/退出前数据真正落盘
+    await f.writeAsString(jsonEncode(s.toJson()), flush: true);
   }
 }
 

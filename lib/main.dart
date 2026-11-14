@@ -14,18 +14,25 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   AppLog.install();
 
-  // 初始化模板库（首启复制内置壳图）
+  // ① 先读设置（独立 try：模板库初始化失败也不能让设置回默认）
+  try {
+    final settings = await SettingsStore().load();
+    gNavGlass.value = settings.navGlass;
+    gNavGlassOpacity.value = settings.navGlassOpacity;
+    gTplGroups.value = settings.tplGroups;
+    gTplHidden.value = settings.tplHidden;
+    gHomeOrder.value = settings.homeOrder;
+    gHomeHidden.value = settings.homeHidden;
+    gAutoPickBg.value = settings.autoPickBg;
+    gThemeMode.value = AppTheme.parse(settings.themeMode);
+    AppTheme.current = gThemeMode.value;
+  } catch (e) {
+    debugPrint('设置加载失败: $e');
+  }
+
+  // ② 再初始化模板库（首启复制内置壳图）
   try {
     await TemplateStore().init();
-  final settings = await SettingsStore().load();
-  gNavGlass.value = settings.navGlass;
-  gNavGlassOpacity.value = settings.navGlassOpacity;
-  gTplGroups.value = settings.tplGroups;
-  gTplHidden.value = settings.tplHidden;
-  gHomeOrder.value = settings.homeOrder;
-  gHomeHidden.value = settings.homeHidden;
-  gThemeMode.value = AppTheme.parse(settings.themeMode);
-  AppTheme.current = gThemeMode.value;
   } catch (e) {
     debugPrint('模板库初始化失败: $e');
   }

@@ -2,7 +2,7 @@ name: shell_video_app
 description: "鎵嬫満澹宠棰戝悎鎴愬伐鍏?- 甯﹀３瑙嗛/鎴浘鍒朵綔"
 publish_to: 'none'
 
-version: 3.3.4+334
+version: 3.3.5+335
 
 environment:
   sdk: ^3.13.3

@@ -27,6 +27,7 @@ import '../services/composer.dart';
 import '../services/app_log.dart';
 
 import '../services/longshot_composer.dart';
+import '../services/motion_diag.dart';
 import '../services/motion_photo_exporter.dart';
 
 import '../services/motion_probe.dart';
@@ -104,6 +105,10 @@ class _ComposeScreenState extends State<ComposeScreen>
   // 画布宽高比（0 = 按屏占比自然比例=原尺寸）
   /// 画布比例：默认 9:16（进入即竖屏 9:16）
   double _canvasRatio = 9 / 16;
+
+  /// 自定义画布比例的整数宽高（按钮显示 + 弹窗回填用）
+  int? _customW;
+  int? _customH;
   /// 方向进度：0 = 竖屏，1 = 横屏（竖→横逆时针 90°，横→竖反向播放）
   late final AnimationController _orientCtrl;
   /// 画布比例切换动画：同一个画布尺寸连续插值（无淡入淡出）
@@ -650,8 +655,9 @@ class _ComposeScreenState extends State<ComposeScreen>
   }
   /// 自定义画布比例（宽 : 高）
   Future<void> _pickCustomRatio() async {
-    final wCtrl = TextEditingController(text: '9');
-    final hCtrl = TextEditingController(text: '16');
+    // 记住上次自定义，重新打开时回填（否则每次都被重置成 9:16）
+    final wCtrl = TextEditingController(text: '${_customW ?? 9}');
+    final hCtrl = TextEditingController(text: '${_customH ?? 16}');
     final r = await showDialog<double>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -693,7 +699,18 @@ class _ComposeScreenState extends State<ComposeScreen>
         ],
       ),
     );
-    if (r != null && mounted) _pickCanvasRatio(r);
+    if (r != null && mounted) {
+      // 记录整数宽高用于按钮显示（比例值本身由 r 决定）
+      final w = int.tryParse(wCtrl.text.trim()) ?? 0;
+      final h = int.tryParse(hCtrl.text.trim()) ?? 0;
+      setState(() {
+        if (w > 0 && h > 0) {
+          _customW = w;
+          _customH = h;
+        }
+      });
+      _pickCanvasRatio(r);
+    }
   }
 
 
@@ -1357,10 +1374,11 @@ class _ComposeScreenState extends State<ComposeScreen>
   Widget _buildOrientRatioCard() {
     final portrait = !_landscape;
     // 顺序固定（不随方向变化）
-    const labels = ['9:16', '3:4', '4:3', '1:1', '16:9', 'A4', 'A4横', '自定义'];
+    // 6 个：3 列 × 2 行（右上角「自定义」）
+    const labels = ['9:16', '3:4', '4:3', '1:1', '16:9', '自定义'];
     const ratios = [
       9 / 16, 3 / 4, 4 / 3, 1 / 1,
-      16 / 9, 1 / 1.414, 1.414 / 1, -1.0 /* 自定义 */
+      16 / 9, -1.0 /* 自定义 */
     ];
 
     Widget orientBtn(String label, IconData icon, bool on, VoidCallback tap) {
@@ -1402,20 +1420,30 @@ class _ComposeScreenState extends State<ComposeScreen>
     Widget ratioBtn(int i) {
       // 第 8 个 = 自定义比例
       if (ratios[i] < 0) {
+        final customOn = _customW != null &&
+            _customH != null &&
+            (_canvasRatio - (_customW! / _customH!)).abs() < 1e-6;
+        final label = _customW == null ? '自定义' : '$_customW:$_customH';
         return GestureDetector(
           onTap: _composing ? null : _pickCustomRatio,
           child: Container(
             height: 38,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: const Color(0xFFF2F4F8),
+              color: customOn ? const Color(0xFFEAF2FF) : const Color(0xFFF2F4F8),
               borderRadius: BorderRadius.circular(19),
+              border: Border.all(
+                color: customOn
+                    ? AppColors.accent.withValues(alpha: .42)
+                    : Colors.transparent,
+                width: customOn ? 0.5 : 0,
+              ),
             ),
-            child: Text(labels[i],
+            child: Text(label,
                 style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.textSub)),
+                    color: customOn ? AppColors.accent : AppColors.textSub)),
           ),
         );
       }
@@ -1489,6 +1517,8 @@ class _ComposeScreenState extends State<ComposeScreen>
               Expanded(
                 child: Column(
                   children: [
+                    // 3 列 × 2 行 = 6 个：9:16 / 3:4 / 4:3
+                    //                   1:1  / 16:9 / 自定义
                     Row(children: [
                       for (var i = 0; i < 3; i++) ...[
                         if (i > 0) const SizedBox(width: 8),
@@ -2425,6 +2455,29 @@ class _ComposeScreenState extends State<ComposeScreen>
         coverMs: _liveTrim?.coverMs ?? 0,
       );
 
+      // ── 动图诊断报告（txt）：结构是否符合 Android Motion Photo 1.0 / 酷安要求 ──
+      String diagTxt = '';
+      String diagPath = '';
+      try {
+        diagTxt = await MotionDiag.run(
+          motion,
+          extra: [
+            'App: 壳映 ShellVideo 3.3.4 (build 334)',
+            '设备: ${Platform.operatingSystem} ${Platform.operatingSystemVersion}',
+            '视频编码器: ${Composer.lastEncoder}',
+            'ffmpeg 命令: ${Composer.lastCommand}',
+            '裁剪: ${_liveTrim == null ? "未裁剪" : "${_liveTrim!.startSec.toStringAsFixed(2)}s ~ ${_liveTrim!.endSec.toStringAsFixed(2)}s"}',
+            'ffmpeg 日志:',
+            ..._ffLog,
+          ].join('\n'),
+        );
+        diagPath = p.join(dir, '${stem}_live_诊断报告.txt');
+        await File(diagPath).writeAsString(diagTxt, flush: true);
+        AppLog.i('motion diag -> $diagPath');
+      } catch (e) {
+        AppLog.i('motion diag failed: $e');
+      }
+
       if (!mounted) return;
       setState(() {
         _progress = .97;
@@ -2450,10 +2503,24 @@ class _ComposeScreenState extends State<ComposeScreen>
       setState(() {
         _composing = false;
         _progress = 1;
-        _progressText = '实况照片已生成';
+        _progressText = diagTxt.contains('结论: 不通过')
+            ? '实况已生成（诊断发现不兼容项）'
+            : '实况照片已生成';
         _done = true;
         _donePath = motion;
       });
+      // 诊断报告分享入口（测试反馈用）
+      if (diagPath.isNotEmpty && mounted) {
+        final pass = !diagTxt.contains('结论: 不通过');
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(pass ? '动图诊断：通过 ✓（点右侧可分享 txt）' : '动图诊断：发现不兼容项（点右侧分享 txt）'),
+          duration: const Duration(seconds: 10),
+          action: SnackBarAction(
+            label: '分享报告',
+            onPressed: () => _shareFile(diagPath, '动图诊断报告'),
+          ),
+        ));
+      }
     } catch (e) {
       if (!mounted) return;
       setState(() {

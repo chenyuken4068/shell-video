@@ -134,9 +134,18 @@ const _kModels = <_Model>[
     _Model(brand: 'OPPO', series: 'Find 系列', model: 'Find X5', displayName: 'OPPO Find X5', templateId: 'builtin_oppo_findx5_c5'),
     _Model(brand: 'OPPO', series: 'Find 系列', model: 'Find X3', displayName: 'OPPO Find X3', templateId: 'builtin_oppo_findx3_c4'),
     _Model(brand: 'OPPO', series: 'Find 系列', model: 'Find X2', displayName: 'OPPO Find X2', templateId: 'builtin_oppo_findx2_c3'),
-    _Model(brand: 'OPPO', series: '一加', model: '一加 15', displayName: '一加 15', templateId: 'builtin_oneplus_15'),
+    _Model(brand: '一加', series: '数字系列', model: '一加 16', displayName: '一加 16', templateId: 'builtin_oneplus16_mingri'),
+_Model(brand: '一加', series: '数字系列', model: '一加 15T', displayName: '一加 15T', templateId: 'builtin_oneplus15t_zhiyu'),
+_Model(brand: '一加', series: '数字系列', model: '一加 15', displayName: '一加 15', templateId: 'builtin_oneplus15_yuansha'),
+_Model(brand: '一加', series: '数字系列', model: '一加 13T', displayName: '一加 13T', templateId: 'builtin_oneplus13t_chenwu'),
+_Model(brand: '一加', series: '数字系列', model: '一加 13', displayName: '一加 13', templateId: 'builtin_oneplus13_bailu'),
 
-  _Model(brand: 'OPPO', series: '真我', model: '真我 GT8 Pro', displayName: '真我 GT8 Pro', templateId: 'builtin_realme_gt8pro'),
+  _Model(brand: '真我', series: 'GT 系列', model: '真我 GT8 Pro', displayName: '真我 GT8 Pro', templateId: 'builtin_realme_gt8pro_white'),
+_Model(brand: '真我', series: 'GT 系列', model: '真我 GT8', displayName: '真我 GT8', templateId: 'builtin_realme_gt8_white'),
+_Model(brand: 'iQOO', series: '数字系列', model: 'iQOO 15 Ultra', displayName: 'iQOO 15 Ultra', templateId: 'builtin_iqoo15ultra_silver2049'),
+_Model(brand: 'iQOO', series: '数字系列', model: 'iQOO 16', displayName: 'iQOO 16', templateId: 'builtin_iqoo16_chuanqi'),
+_Model(brand: 'iQOO', series: '数字系列', model: 'iQOO 15', displayName: 'iQOO 15', templateId: 'builtin_iqoo15_chuanqi'),
+_Model(brand: 'iQOO', series: 'Neo 系列', model: 'iQOO Neo11', displayName: 'iQOO Neo11'),
 
 
 
@@ -160,13 +169,13 @@ const _kModels = <_Model>[
     _Model(brand: 'vivo', series: 'X 系列', model: 'vivo X300', displayName: 'vivo X300', templateId: 'builtin_vivo_vivox300_v10'),
     _Model(brand: 'vivo', series: 'X 系列', model: 'vivo X200 Pro mini', displayName: 'vivo X200 Pro mini', templateId: 'builtin_vivo_vivox200promini_v6'),
     _Model(brand: 'vivo', series: 'X 系列', model: 'vivo X100', displayName: 'vivo X100', templateId: 'builtin_vivo_vivox100_v1'),
-    _Model(brand: '三星', series: 'S 系列', model: 'S26 Ultra', displayName: '三星 Galaxy S26 Ultra', templateId: 'builtin_samsung_s26_ultra'),
+    _Model(brand: '三星', series: 'S 系列', model: 'S26 Ultra', displayName: '三星 Galaxy S26 Ultra', templateId: 'builtin_samsung_s26u_xingshuang'),
 
-  _Model(brand: '三星', series: 'S 系列', model: 'Galaxy S25 Ultra', displayName: '三星 Galaxy S25 Ultra', templateId: 'builtin_samsung_s25_ultra'),
+  _Model(brand: '三星', series: 'S 系列', model: 'Galaxy S25 Ultra', displayName: '三星 Galaxy S25 Ultra', templateId: 'builtin_samsung_s25u_tiyin'),
 
   _Model(brand: '三星', series: 'S 系列', model: 'S25'),
 
-  _Model(brand: '三星', series: 'S 系列', model: 'S24 Ultra'),
+  _Model(brand: '三星', series: 'S 系列', model: 'S24 Ultra', displayName: '三星 Galaxy S24 Ultra', templateId: 'builtin_samsung_s24u_timu'),
 
   _Model(brand: '三星', series: 'S 系列', model: 'S24'),
 
@@ -174,7 +183,12 @@ const _kModels = <_Model>[
 
   _Model(brand: '荣耀', series: '数字系列', model: '600', displayName: '荣耀 600', templateId: 'builtin_honor_600'),
 
-  _Model(brand: '荣耀', series: 'Magic 系列', model: 'Magic7 Pro'),
+  _Model(brand: '荣耀', series: 'Magic 系列', model: 'Magic9 Pro Max', displayName: '荣耀 Magic9 Pro Max', templateId: 'builtin_honor_magic9pm_yinyan'),
+_Model(brand: '荣耀', series: 'Magic 系列', model: 'Magic9 超能版', displayName: '荣耀 Magic9 超能版', templateId: 'builtin_honor_magic9x_kaichang'),
+_Model(brand: '荣耀', series: 'Magic 系列', model: 'Magic9', displayName: '荣耀 Magic9', templateId: 'builtin_honor_magic9_kaichang'),
+_Model(brand: '荣耀', series: 'Magic 系列', model: 'Magic8 Pro', displayName: '荣耀 Magic8 Pro', templateId: 'builtin_honor_magic8p_xuebai'),
+_Model(brand: '荣耀', series: 'Magic 系列', model: 'Magic8', displayName: '荣耀 Magic8', templateId: 'builtin_honor_magic8_xuebai'),
+_Model(brand: '荣耀', series: 'Magic 系列', model: 'Magic7 Pro'),
 
   _Model(brand: '荣耀', series: 'Magic 系列', model: 'Magic7'),
 
@@ -251,6 +265,9 @@ class _TplLibraryScreenState extends State<TplLibraryScreen> {
     '华为',
 
     'OPPO',
+    'iQOO',
+    '一加',
+    '真我',
 
     'vivo',
 

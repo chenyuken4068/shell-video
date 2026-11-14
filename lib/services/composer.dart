@@ -146,7 +146,7 @@ class Composer {
       ..write('[bg][va]overlay=${ccx + template.screenX}:${ccy + template.screenY}:'
           'format=auto[bgv];')
       ..write('[bgv][1:v]overlay=$ccx:$ccy:format=auto,format=yuv420p[pre];')
-      ..write('[pre]scale=$scaleQuality[vout]');
+      ..write('[pre]scale=$scaleQuality,setsar=1[vout]');
 
     final base = [
       '-y',
@@ -435,6 +435,12 @@ class Composer {
   /// 背景：部分修补版 ffmpeg 没编译 libx264（日志里会报 `Unknown encoder 'libx264'`），
   /// 而 mediacodec 是启用的；mpeg4 是 ffmpeg 内置编码器，几乎永远在，作为最后兜底。
   /// `Unknown encoder` 属于立即失败，逐个换掉几乎不耗时。
+  /// 最近一次成功导出实际使用的视频编码器（诊断用）
+  static String lastEncoder = '';
+
+  /// 最近一次成功导出的完整 ffmpeg 命令（诊断用）
+  static String lastCommand = '';
+
   static Future<bool> _encodeVideo({
     required List<String> base,
     bool motionPhoto = false,
@@ -452,17 +458,20 @@ class Composer {
     //   所以绝不能只押 libx264。实况动态照片要求「标准 H.264」，
     //   h264_mediacodec（硬件）在多数机型能产出标准 yuv420p H.264，优先试它；
     //   再退 openh264 / h264 软编；最后才退 mpeg4（第三方 App 可能不认，仅兜底）。
+    // 实况动态照片：**只允许规范内的 AVC / HEVC**（mpeg4=mp4v 会被酷安拒绝）
     final attempts = <List<String>>[
       if (motionPhoto) ...[
-        // ① 硬件 H.264（快、标准码流）
-        ['-c:v', 'h264_mediacodec', '-b:v', '12M', '-pix_fmt', 'yuv420p'],
-        // ② 软编 H.264（部分构建名称为 h264 / openh264）
+        // 硬件 H.264（参数尽量精简，mediacodec 对 -bufsize 等经常报错）
+        ['-c:v', 'h264_mediacodec'],
+        ['-c:v', 'h264_mediacodec', '-b:v', '8M'],
+        // 硬件 HEVC（规范允许 HEVC）
+        ['-c:v', 'hevc_mediacodec', '-b:v', '8M'],
+        // 软编（若该 ffmpeg 构建包含）
         ['-c:v', 'libx264', '-preset', 'ultrafast', '-crf', '23',
-          '-pix_fmt', 'yuv420p', '-profile:v', 'high', '-level', '4.0'],
+          '-pix_fmt', 'yuv420p'],
         ['-c:v', 'h264', '-pix_fmt', 'yuv420p'],
         ['-c:v', 'openh264', '-pix_fmt', 'yuv420p'],
-        // ③ 兜底：MPEG-4（酷安等第三方可能不认，但至少能导出）
-        ['-c:v', 'mpeg4', '-q:v', '3', '-pix_fmt', 'yuv420p'],
+        // ❌ 不再用 mpeg4 兜底：产出 mp4v 会被酷安/相册判为不合法
       ] else ...[
         if (preferHardware) ['-c:v', 'h264_mediacodec', '-b:v', '10M', '-bufsize', '20M'],
         ['-c:v', 'libx264', '-preset', 'ultrafast', '-crf', '23', '-pix_fmt', 'yuv420p'],
@@ -476,7 +485,12 @@ class Composer {
         onProgress,
         onLog,
       );
-      if (ok) return true;
+      if (ok) {
+        lastEncoder = attempts[i][1];
+        lastCommand = [...base, ...attempts[i], _q(outputPath)].join(' ');
+        onLog?.call('[编码器] 使用 ${attempts[i][1]} ✓');
+        return true;
+      }
       if (i < attempts.length - 1) {
         onLog?.call('[提示] 编码器 ${attempts[i][1]} 不可用，自动换下一个');
       }
@@ -679,7 +693,7 @@ class Composer {
     filter
       ..write('[$contentLayer][$caseIdx:v]overlay=$ccx:$ccy:format=auto,'
           'format=${asVideo ? 'yuv420p' : 'rgba'}[pre];')
-      ..write('[pre]scale=$scaleQuality[vout]');
+      ..write('[pre]scale=$scaleQuality,setsar=1[vout]');
 
     final bgInput = bgPath == null
         ? const <String>[]

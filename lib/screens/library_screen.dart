@@ -1,5 +1,6 @@
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+import '../services/motion_diag.dart';
 import '../services/motion_probe.dart';
 import '../widgets/app_glass.dart';
 import '../widgets/glass_pill.dart';
@@ -993,7 +994,7 @@ class _ImageViewerScreenState extends State<ImageViewerScreen> {
             ),
             const SizedBox(width: 8),
             GestureDetector(
-              onTap: _delete,
+              onTap: _showMore,
               child: Container(
                 width: 40,
                 height: 40,
@@ -1010,6 +1011,103 @@ class _ImageViewerScreenState extends State<ImageViewerScreen> {
         ),
       ),
     );
+  }
+
+  void _showMore() {
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: AppColors.card,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 6),
+            _sheetItem(Icons.science_outlined, '动图诊断（生成 txt 报告）', () {
+              Navigator.pop(ctx);
+              _diagMotion();
+            }),
+            _sheetItem(Icons.download_rounded, '保存到相册', () {
+              Navigator.pop(ctx);
+              _save();
+            }),
+            _sheetItem(Icons.share_outlined, '分享', () {
+              Navigator.pop(ctx);
+              _share();
+            }),
+            _sheetItem(Icons.delete_outline, '删除',
+                () {
+              Navigator.pop(ctx);
+              _delete();
+            }, danger: true),
+            const SizedBox(height: 10),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _sheetItem(IconData icon, String label, VoidCallback onTap,
+      {bool danger = false}) {
+    final c = danger ? const Color(0xFFE5484D) : AppColors.text;
+    return ListTile(
+      leading: Icon(icon, color: danger ? c : AppColors.accent),
+      title: Text(label,
+          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: c)),
+      onTap: onTap,
+    );
+  }
+
+  /// 动图诊断：解析结构并生成 txt 报告
+  Future<void> _diagMotion() async {
+    try {
+      final txt = await MotionDiag.run(
+        widget.path,
+        extra: '来源: 图库预览页手动诊断',
+      );
+      final dir = await getApplicationDocumentsDirectory();
+      final name =
+          '动图诊断_${DateTime.now().millisecondsSinceEpoch}.txt';
+      final f = File('${dir.path}/$name');
+      await f.writeAsString(txt, flush: true);
+      if (!mounted) return;
+      await showDialog<void>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('动图诊断报告'),
+          content: SizedBox(
+            width: 520,
+            child: SingleChildScrollView(
+              child: Text(txt,
+                  style: const TextStyle(fontSize: 11.5, height: 1.35)),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('关闭'),
+            ),
+            FilledButton(
+              onPressed: () async {
+                try {
+                  await SharePlus.instance
+                      .share(ShareParams(files: [XFile(f.path)]));
+                } catch (_) {}
+              },
+              child: const Text('分享 txt'),
+            ),
+          ],
+        ),
+      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('诊断失败: $e')),
+        );
+      }
+    }
   }
 
   Widget _ivChip({IconData? icon, required String text}) {
