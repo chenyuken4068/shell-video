@@ -1,0 +1,1351 @@
+{
+  "version": 1,
+  "tag": "v3.3.5",
+  "repo": "chenyuken4068/shell-video",
+  "models": {
+    "honor_magic8": {
+      "name": "荣耀 Magic8",
+      "zip": "honor_magic8.zip",
+      "size": 3816985,
+      "sha256": "c0d550c0a7145c8d6fc16c8aa2a2e74e3d4512f908003058814605e7d57fc260",
+      "colors": {
+        "honor_magic8_tianqing": {
+          "file": "honor_magic8_tianqing.png",
+          "x": 270,
+          "y": 242,
+          "w": 1804,
+          "h": 3972,
+          "r": 222
+        },
+        "honor_magic8_xuri": {
+          "file": "honor_magic8_xuri.png",
+          "x": 270,
+          "y": 242,
+          "w": 1804,
+          "h": 3972,
+          "r": 222
+        },
+        "honor_magic8_ronghei": {
+          "file": "honor_magic8_ronghei.png",
+          "x": 270,
+          "y": 242,
+          "w": 1804,
+          "h": 3972,
+          "r": 222
+        },
+        "honor_magic8_xuebai": {
+          "file": "honor_magic8_xuebai.png",
+          "x": 270,
+          "y": 242,
+          "w": 1804,
+          "h": 3972,
+          "r": 222
+        }
+      }
+    },
+    "honor_magic8p": {
+      "name": "荣耀 Magic8 Pro",
+      "zip": "honor_magic8p.zip",
+      "size": 4046552,
+      "sha256": "35f438c61de35f968cac9096e8ae98e4675ea7c43465864ccc67d8d56ad44419",
+      "colors": {
+        "honor_magic8p_tianqing": {
+          "file": "honor_magic8p_tianqing.png",
+          "x": 278,
+          "y": 244,
+          "w": 1804,
+          "h": 3998,
+          "r": 222
+        },
+        "honor_magic8p_xuri": {
+          "file": "honor_magic8p_xuri.png",
+          "x": 278,
+          "y": 244,
+          "w": 1804,
+          "h": 3998,
+          "r": 222
+        },
+        "honor_magic8p_ronghei": {
+          "file": "honor_magic8p_ronghei.png",
+          "x": 278,
+          "y": 244,
+          "w": 1804,
+          "h": 3998,
+          "r": 222
+        },
+        "honor_magic8p_xuebai": {
+          "file": "honor_magic8p_xuebai.png",
+          "x": 278,
+          "y": 244,
+          "w": 1804,
+          "h": 3998,
+          "r": 222
+        }
+      }
+    },
+    "honor_magic9": {
+      "name": "荣耀 Magic9",
+      "zip": "honor_magic9.zip",
+      "size": 3236275,
+      "sha256": "762de5ed5ad1e815ff457eb0aafe52ff624a2d8b274705217a0b03f216a39785",
+      "colors": {
+        "honor_magic9_mubu": {
+          "file": "honor_magic9_mubu.png",
+          "x": 251,
+          "y": 230,
+          "w": 1803,
+          "h": 3894,
+          "r": 247
+        },
+        "honor_magic9_kaichang": {
+          "file": "honor_magic9_kaichang.png",
+          "x": 251,
+          "y": 230,
+          "w": 1803,
+          "h": 3894,
+          "r": 247
+        },
+        "honor_magic9_ganlan": {
+          "file": "honor_magic9_ganlan.png",
+          "x": 251,
+          "y": 230,
+          "w": 1803,
+          "h": 3894,
+          "r": 247
+        },
+        "honor_magic9_baomi": {
+          "file": "honor_magic9_baomi.png",
+          "x": 251,
+          "y": 230,
+          "w": 1803,
+          "h": 3894,
+          "r": 247
+        }
+      }
+    },
+    "honor_magic9pm": {
+      "name": "荣耀 Magic9 Pro Max",
+      "zip": "honor_magic9pm.zip",
+      "size": 2367567,
+      "sha256": "9ab9779ded212c1e2e2df7a2fd3adf98eb2590759d4a2db5e421a5abaa368ac1",
+      "colors": {
+        "honor_magic9pm_yinghei": {
+          "file": "honor_magic9pm_yinghei.png",
+          "x": 110,
+          "y": 67,
+          "w": 1805,
+          "h": 3915,
+          "r": 245
+        },
+        "honor_magic9pm_taiqing": {
+          "file": "honor_magic9pm_taiqing.png",
+          "x": 110,
+          "y": 67,
+          "w": 1805,
+          "h": 3915,
+          "r": 245
+        },
+        "honor_magic9pm_yinyan": {
+          "file": "honor_magic9pm_yinyan.png",
+          "x": 110,
+          "y": 67,
+          "w": 1805,
+          "h": 3915,
+          "r": 245
+        }
+      }
+    },
+    "honor_magic9x": {
+      "name": "荣耀 Magic9 超能版",
+      "zip": "honor_magic9x.zip",
+      "size": 3236283,
+      "sha256": "29bcd365a4dfb619730fd28e8465f880b5f804164fd200213b210ae3319726c4",
+      "colors": {
+        "honor_magic9x_mubu": {
+          "file": "honor_magic9x_mubu.png",
+          "x": 251,
+          "y": 230,
+          "w": 1803,
+          "h": 3894,
+          "r": 247
+        },
+        "honor_magic9x_kaichang": {
+          "file": "honor_magic9x_kaichang.png",
+          "x": 251,
+          "y": 230,
+          "w": 1803,
+          "h": 3894,
+          "r": 247
+        },
+        "honor_magic9x_ganlan": {
+          "file": "honor_magic9x_ganlan.png",
+          "x": 251,
+          "y": 230,
+          "w": 1803,
+          "h": 3894,
+          "r": 247
+        },
+        "honor_magic9x_baomi": {
+          "file": "honor_magic9x_baomi.png",
+          "x": 251,
+          "y": 230,
+          "w": 1803,
+          "h": 3894,
+          "r": 247
+        }
+      }
+    },
+    "iqoo15": {
+      "name": "iQOO 15",
+      "zip": "iqoo15.zip",
+      "size": 5719460,
+      "sha256": "87446d1b0321b588052f6618e25a1882cebcf1e21a9b06e7f2271c3d8f6431ca",
+      "colors": {
+        "iqoo15_chuanqi": {
+          "file": "iqoo15_chuanqi.png",
+          "x": 547,
+          "y": 501,
+          "w": 1806,
+          "h": 3957,
+          "r": 192
+        },
+        "iqoo15_lingyun": {
+          "file": "iqoo15_lingyun.png",
+          "x": 547,
+          "y": 501,
+          "w": 1806,
+          "h": 3957,
+          "r": 192
+        },
+        "iqoo15_kuangye": {
+          "file": "iqoo15_kuangye.png",
+          "x": 547,
+          "y": 501,
+          "w": 1806,
+          "h": 3957,
+          "r": 192
+        },
+        "iqoo15_wangzhe": {
+          "file": "iqoo15_wangzhe.png",
+          "x": 547,
+          "y": 501,
+          "w": 1806,
+          "h": 3957,
+          "r": 192
+        },
+        "iqoo15_saidao": {
+          "file": "iqoo15_saidao.png",
+          "x": 547,
+          "y": 501,
+          "w": 1806,
+          "h": 3957,
+          "r": 192
+        }
+      }
+    },
+    "iqoo15ultra": {
+      "name": "iQOO 15 Ultra",
+      "zip": "iqoo15ultra.zip",
+      "size": 1564697,
+      "sha256": "4727ef5928c659d7f37640a44482e1d337e76dc75cdcbd51263962fdeafb5636",
+      "colors": {
+        "iqoo15ultra_silver2049": {
+          "file": "iqoo15ultra_silver2049.png",
+          "x": 462,
+          "y": 340,
+          "w": 1806,
+          "h": 3970,
+          "r": 183
+        },
+        "iqoo15ultra_black2077": {
+          "file": "iqoo15ultra_black2077.png",
+          "x": 462,
+          "y": 340,
+          "w": 1806,
+          "h": 3970,
+          "r": 183
+        }
+      }
+    },
+    "oneplus13": {
+      "name": "一加 13",
+      "zip": "oneplus13.zip",
+      "size": 2643083,
+      "sha256": "f553f575fb58c7101dab2955c592f6c234ff00aa542a3189271cced95cf172fe",
+      "colors": {
+        "oneplus13_bailu": {
+          "file": "oneplus13_bailu.png",
+          "x": 409,
+          "y": 266,
+          "w": 1804,
+          "h": 3927,
+          "r": 138
+        },
+        "oneplus13_landiao": {
+          "file": "oneplus13_landiao.png",
+          "x": 409,
+          "y": 266,
+          "w": 1804,
+          "h": 3927,
+          "r": 138
+        },
+        "oneplus13_heiyao": {
+          "file": "oneplus13_heiyao.png",
+          "x": 409,
+          "y": 266,
+          "w": 1804,
+          "h": 3927,
+          "r": 138
+        }
+      }
+    },
+    "oneplus13t": {
+      "name": "一加 13T",
+      "zip": "oneplus13t.zip",
+      "size": 3446503,
+      "sha256": "10479c9223b100bcb7a628963bf670755bc85a5b59171b1fc6a09dbd8e9eca63",
+      "colors": {
+        "oneplus13t_yunmo": {
+          "file": "oneplus13t_yunmo.png",
+          "x": 562,
+          "y": 523,
+          "w": 1805,
+          "h": 3916,
+          "r": 196
+        },
+        "oneplus13t_pengran": {
+          "file": "oneplus13t_pengran.png",
+          "x": 562,
+          "y": 523,
+          "w": 1805,
+          "h": 3916,
+          "r": 196
+        },
+        "oneplus13t_chenwu": {
+          "file": "oneplus13t_chenwu.png",
+          "x": 562,
+          "y": 523,
+          "w": 1805,
+          "h": 3916,
+          "r": 196
+        }
+      }
+    },
+    "oneplus15": {
+      "name": "一加 15",
+      "zip": "oneplus15.zip",
+      "size": 3042187,
+      "sha256": "476441487bdc4bdf99681c701ae708c04afabae19550d59e9c42a236e9c59ec9",
+      "colors": {
+        "oneplus15_yuansha": {
+          "file": "oneplus15_yuansha.png",
+          "x": 525,
+          "y": 463,
+          "w": 1805,
+          "h": 3921,
+          "r": 212
+        },
+        "oneplus15_juedui": {
+          "file": "oneplus15_juedui.png",
+          "x": 525,
+          "y": 463,
+          "w": 1805,
+          "h": 3921,
+          "r": 212
+        },
+        "oneplus15_wuguang": {
+          "file": "oneplus15_wuguang.png",
+          "x": 525,
+          "y": 463,
+          "w": 1805,
+          "h": 3921,
+          "r": 212
+        }
+      }
+    },
+    "oneplus15t": {
+      "name": "一加 15T",
+      "zip": "oneplus15t.zip",
+      "size": 3165611,
+      "sha256": "1cfb96542012ffe2bc54094386000de22c0831a61e78bda1583f58f7c1150bd8",
+      "colors": {
+        "oneplus15t_songchi": {
+          "file": "oneplus15t_songchi.png",
+          "x": 536,
+          "y": 485,
+          "w": 1806,
+          "h": 3915,
+          "r": 209
+        },
+        "oneplus15t_zhiyu": {
+          "file": "oneplus15t_zhiyu.png",
+          "x": 536,
+          "y": 485,
+          "w": 1806,
+          "h": 3915,
+          "r": 209
+        },
+        "oneplus15t_chuncui": {
+          "file": "oneplus15t_chuncui.png",
+          "x": 536,
+          "y": 485,
+          "w": 1806,
+          "h": 3915,
+          "r": 209
+        }
+      }
+    },
+    "oneplus16": {
+      "name": "一加 16",
+      "zip": "oneplus16.zip",
+      "size": 2757854,
+      "sha256": "98cd98873654cc1147345b7ecb91117630fcc9291338e0ac66670dd4f62e37ea",
+      "colors": {
+        "oneplus16_mingri": {
+          "file": "oneplus16_mingri.png",
+          "x": 385,
+          "y": 219,
+          "w": 1805,
+          "h": 3937,
+          "r": 246
+        },
+        "oneplus16_huoxing": {
+          "file": "oneplus16_huoxing.png",
+          "x": 385,
+          "y": 219,
+          "w": 1805,
+          "h": 3937,
+          "r": 246
+        },
+        "oneplus16_heian": {
+          "file": "oneplus16_heian.png",
+          "x": 385,
+          "y": 219,
+          "w": 1805,
+          "h": 3937,
+          "r": 246
+        }
+      }
+    },
+    "oppo_findx10promax": {
+      "name": "Find X10 Pro Max",
+      "zip": "oppo_findx10promax.zip",
+      "size": 2893370,
+      "sha256": "d108d98848153ed439cb0a9750bcf6d0467bec0de4f9141dfe8274c13f273c86",
+      "colors": {
+        "oppo_findx10promax_warmorange": {
+          "file": "oppo_findx10promax_warmorange.png",
+          "x": 415,
+          "y": 278,
+          "w": 1804,
+          "h": 3924,
+          "r": 248
+        },
+        "oppo_findx10promax_moonwhite": {
+          "file": "oppo_findx10promax_moonwhite.png",
+          "x": 415,
+          "y": 278,
+          "w": 1804,
+          "h": 3924,
+          "r": 248
+        },
+        "oppo_findx10promax_lighttitanium": {
+          "file": "oppo_findx10promax_lighttitanium.png",
+          "x": 415,
+          "y": 278,
+          "w": 1804,
+          "h": 3924,
+          "r": 248
+        }
+      }
+    },
+    "oppo_findx2": {
+      "name": "Find X2",
+      "zip": "oppo_findx2.zip",
+      "size": 1216564,
+      "sha256": "da98e6e354bfc66072bb235832348cacedcf7ca1a8d055dfd2a276f06db392a6",
+      "colors": {
+        "oppo_findx2_c3": {
+          "file": "oppo_findx2_c3.png",
+          "x": 46,
+          "y": 90,
+          "w": 1852,
+          "h": 4069,
+          "r": 164
+        }
+      }
+    },
+    "oppo_findx3": {
+      "name": "Find X3",
+      "zip": "oppo_findx3.zip",
+      "size": 1435058,
+      "sha256": "0a967fbf4290049155a06704ac9957f53e252c8cdfa87156e6f78450002d0cf8",
+      "colors": {
+        "oppo_findx3_c4": {
+          "file": "oppo_findx3_c4.png",
+          "x": 94,
+          "y": 183,
+          "w": 1839,
+          "h": 4040,
+          "r": 159
+        }
+      }
+    },
+    "oppo_findx5": {
+      "name": "Find X5",
+      "zip": "oppo_findx5.zip",
+      "size": 1244565,
+      "sha256": "66dd68fa70915598cb161cab60442ac7fba2f24eb644d3b6ec99760873b3417a",
+      "colors": {
+        "oppo_findx5_c5": {
+          "file": "oppo_findx5_c5.png",
+          "x": 58,
+          "y": 86,
+          "w": 1831,
+          "h": 4045,
+          "r": 130
+        }
+      }
+    },
+    "oppo_findx6": {
+      "name": "Find X6",
+      "zip": "oppo_findx6.zip",
+      "size": 1841423,
+      "sha256": "76daabae5fcc3b1070849c04eb3e446769f3116cffb63745f6aa100700a05db3",
+      "colors": {
+        "oppo_findx6_c6": {
+          "file": "oppo_findx6_c6.png",
+          "x": 455,
+          "y": 279,
+          "w": 1835,
+          "h": 4080,
+          "r": 152
+        }
+      }
+    },
+    "oppo_findx7": {
+      "name": "Find X7",
+      "zip": "oppo_findx7.zip",
+      "size": 2359337,
+      "sha256": "5a2467f19656fe38422a8e7e04b2b0412cad1b0f0f7d956b5db8b415c5311338",
+      "colors": {
+        "oppo_findx7_c7": {
+          "file": "oppo_findx7_c7.png",
+          "x": 74,
+          "y": 112,
+          "w": 1850,
+          "h": 4065,
+          "r": 148
+        }
+      }
+    },
+    "oppo_findx8": {
+      "name": "Find X8",
+      "zip": "oppo_findx8.zip",
+      "size": 3985223,
+      "sha256": "6fd790dc59a92f6eb2d25d26456eb8f7814ff17d787732e9954967d37319dff6",
+      "colors": {
+        "oppo_findx8_black": {
+          "file": "oppo_findx8_black.png",
+          "x": 473,
+          "y": 362,
+          "w": 1808,
+          "h": 3954,
+          "r": 268
+        },
+        "oppo_findx8_pink": {
+          "file": "oppo_findx8_pink.png",
+          "x": 473,
+          "y": 362,
+          "w": 1808,
+          "h": 3954,
+          "r": 268
+        },
+        "oppo_findx8_white": {
+          "file": "oppo_findx8_white.png",
+          "x": 473,
+          "y": 362,
+          "w": 1808,
+          "h": 3954,
+          "r": 268
+        },
+        "oppo_findx8_blue": {
+          "file": "oppo_findx8_blue.png",
+          "x": 473,
+          "y": 362,
+          "w": 1808,
+          "h": 3954,
+          "r": 268
+        }
+      }
+    },
+    "oppo_findx8s": {
+      "name": "Find X8s",
+      "zip": "oppo_findx8s.zip",
+      "size": 3110851,
+      "sha256": "da24fca09055f0ce9bd3fad481f7655b0fcfe44cda5cd89eec410900cc985d02",
+      "colors": {
+        "oppo_findx8s_black": {
+          "file": "oppo_findx8s_black.png",
+          "x": 402,
+          "y": 253,
+          "w": 1804,
+          "h": 3925,
+          "r": 173
+        },
+        "oppo_findx8s_moonwhite2": {
+          "file": "oppo_findx8s_moonwhite2.png",
+          "x": 402,
+          "y": 253,
+          "w": 1804,
+          "h": 3925,
+          "r": 173
+        },
+        "oppo_findx8s_islandblue": {
+          "file": "oppo_findx8s_islandblue.png",
+          "x": 402,
+          "y": 253,
+          "w": 1804,
+          "h": 3925,
+          "r": 173
+        },
+        "oppo_findx8s_sakura": {
+          "file": "oppo_findx8s_sakura.png",
+          "x": 402,
+          "y": 253,
+          "w": 1804,
+          "h": 3925,
+          "r": 173
+        }
+      }
+    },
+    "oppo_findx8ultra": {
+      "name": "Find X8 Ultra",
+      "zip": "oppo_findx8ultra.zip",
+      "size": 3128724,
+      "sha256": "548b0a818be451c6f057a3060e61c9b1a8c0680d2733dcffb22207ed0f8f32e6",
+      "colors": {
+        "oppo_findx8ultra_black": {
+          "file": "oppo_findx8ultra_black.png",
+          "x": 553,
+          "y": 490,
+          "w": 1805,
+          "h": 3962,
+          "r": 132
+        },
+        "oppo_findx8ultra_dawn": {
+          "file": "oppo_findx8ultra_dawn.png",
+          "x": 553,
+          "y": 490,
+          "w": 1805,
+          "h": 3962,
+          "r": 132
+        },
+        "oppo_findx8ultra_moonwhite2": {
+          "file": "oppo_findx8ultra_moonwhite2.png",
+          "x": 553,
+          "y": 490,
+          "w": 1805,
+          "h": 3962,
+          "r": 132
+        }
+      }
+    },
+    "oppo_findx9": {
+      "name": "Find X9",
+      "zip": "oppo_findx9.zip",
+      "size": 3380267,
+      "sha256": "817158f375e3e5409b639ded7689d4427bda5956b5f9af706079e2cde819f172",
+      "colors": {
+        "oppo_findx9_titanium": {
+          "file": "oppo_findx9_titanium.png",
+          "x": 349,
+          "y": 151,
+          "w": 1804,
+          "h": 3948,
+          "r": 213
+        },
+        "oppo_findx9_red": {
+          "file": "oppo_findx9_red.png",
+          "x": 349,
+          "y": 151,
+          "w": 1804,
+          "h": 3948,
+          "r": 213
+        },
+        "oppo_findx9_fogblack": {
+          "file": "oppo_findx9_fogblack.png",
+          "x": 349,
+          "y": 151,
+          "w": 1804,
+          "h": 3948,
+          "r": 213
+        },
+        "oppo_findx9_frostwhite": {
+          "file": "oppo_findx9_frostwhite.png",
+          "x": 349,
+          "y": 151,
+          "w": 1804,
+          "h": 3948,
+          "r": 213
+        }
+      }
+    },
+    "oppo_findx9pro": {
+      "name": "Find X9 Pro",
+      "zip": "oppo_findx9pro.zip",
+      "size": 2525308,
+      "sha256": "3a71c1c9c0165dd66f0ac9d553aafb9e82be590891dcdbf60ee672b8b5d5d249",
+      "colors": {
+        "oppo_findx9pro_titanium": {
+          "file": "oppo_findx9pro_titanium.png",
+          "x": 432,
+          "y": 305,
+          "w": 1806,
+          "h": 3917,
+          "r": 223
+        },
+        "oppo_findx9pro_red": {
+          "file": "oppo_findx9pro_red.png",
+          "x": 432,
+          "y": 305,
+          "w": 1806,
+          "h": 3917,
+          "r": 223
+        },
+        "oppo_findx9pro_frostwhite": {
+          "file": "oppo_findx9pro_frostwhite.png",
+          "x": 432,
+          "y": 305,
+          "w": 1806,
+          "h": 3917,
+          "r": 223
+        }
+      }
+    },
+    "oppo_findx9spro": {
+      "name": "Find X9S Pro",
+      "zip": "oppo_findx9spro.zip",
+      "size": 3849581,
+      "sha256": "8c215456a8f8dd7a333db1f34eff054fd6ff0a7558cb006cf710ace1315faa50",
+      "colors": {
+        "oppo_findx9spro_cyan": {
+          "file": "oppo_findx9spro_cyan.png",
+          "x": 394,
+          "y": 251,
+          "w": 1805,
+          "h": 3903,
+          "r": 220
+        },
+        "oppo_findx9spro_orange": {
+          "file": "oppo_findx9spro_orange.png",
+          "x": 394,
+          "y": 251,
+          "w": 1805,
+          "h": 3903,
+          "r": 220
+        },
+        "oppo_findx9spro_nativetitanium": {
+          "file": "oppo_findx9spro_nativetitanium.png",
+          "x": 394,
+          "y": 251,
+          "w": 1805,
+          "h": 3903,
+          "r": 220
+        },
+        "oppo_findx9spro_freewhite": {
+          "file": "oppo_findx9spro_freewhite.png",
+          "x": 394,
+          "y": 251,
+          "w": 1805,
+          "h": 3903,
+          "r": 220
+        }
+      }
+    },
+    "oppo_findx9ultra": {
+      "name": "Find X9 Ultra",
+      "zip": "oppo_findx9ultra.zip",
+      "size": 2319547,
+      "sha256": "44e8b0fb22fdd9f5400f07e5385126a75e04c4ce01dd67c5d8e11b961b6fea70",
+      "colors": {
+        "oppo_findx9ultra_tundra": {
+          "file": "oppo_findx9ultra_tundra.png",
+          "x": 359,
+          "y": 404,
+          "w": 1805,
+          "h": 3959,
+          "r": 143
+        },
+        "oppo_findx9ultra_glacier": {
+          "file": "oppo_findx9ultra_glacier.png",
+          "x": 359,
+          "y": 404,
+          "w": 1805,
+          "h": 3959,
+          "r": 143
+        },
+        "oppo_findx9ultra_canyon": {
+          "file": "oppo_findx9ultra_canyon.png",
+          "x": 359,
+          "y": 404,
+          "w": 1805,
+          "h": 3959,
+          "r": 143
+        }
+      }
+    },
+    "realme_gt8": {
+      "name": "真我 GT8",
+      "zip": "realme_gt8.zip",
+      "size": 2475719,
+      "sha256": "ba4d92da541d04353a4b347c464208826fa27a3638d5e63bc1f5abe72126c63a",
+      "colors": {
+        "realme_gt8_white": {
+          "file": "realme_gt8_white.png",
+          "x": 370,
+          "y": 205,
+          "w": 1804,
+          "h": 3925,
+          "r": 218
+        },
+        "realme_gt8_green": {
+          "file": "realme_gt8_green.png",
+          "x": 370,
+          "y": 205,
+          "w": 1804,
+          "h": 3925,
+          "r": 218
+        },
+        "realme_gt8_navy": {
+          "file": "realme_gt8_navy.png",
+          "x": 370,
+          "y": 205,
+          "w": 1804,
+          "h": 3925,
+          "r": 218
+        }
+      }
+    },
+    "realme_gt8pro": {
+      "name": "真我 GT8 Pro",
+      "zip": "realme_gt8pro.zip",
+      "size": 4321920,
+      "sha256": "b9895d250a265f9f8c015b9404f81e2360f9b91c9eb15d618124738f96c889f7",
+      "colors": {
+        "realme_gt8pro_blue": {
+          "file": "realme_gt8pro_blue.png",
+          "x": 478,
+          "y": 202,
+          "w": 1803,
+          "h": 3920,
+          "r": 212
+        },
+        "realme_gt8pro_white": {
+          "file": "realme_gt8pro_white.png",
+          "x": 478,
+          "y": 202,
+          "w": 1803,
+          "h": 3920,
+          "r": 212
+        },
+        "realme_gt8pro_green": {
+          "file": "realme_gt8pro_green.png",
+          "x": 478,
+          "y": 202,
+          "w": 1803,
+          "h": 3920,
+          "r": 212
+        },
+        "realme_gt8pro_amg": {
+          "file": "realme_gt8pro_amg.png",
+          "x": 478,
+          "y": 202,
+          "w": 1803,
+          "h": 3920,
+          "r": 212
+        }
+      }
+    },
+    "samsung_s24u": {
+      "name": "三星 Galaxy S24 Ultra",
+      "zip": "samsung_s24u.zip",
+      "size": 8440259,
+      "sha256": "29faaa3c834027b50b4d7209e48580a018816b8685bb4642b2cfc8560d16785d",
+      "colors": {
+        "samsung_s24u_tiling": {
+          "file": "samsung_s24u_tiling.png",
+          "x": 450,
+          "y": 348,
+          "w": 1804,
+          "h": 3908,
+          "r": 8
+        },
+        "samsung_s24u_tichuan": {
+          "file": "samsung_s24u_tichuan.png",
+          "x": 450,
+          "y": 348,
+          "w": 1804,
+          "h": 3908,
+          "r": 8
+        },
+        "samsung_s24u_timu": {
+          "file": "samsung_s24u_timu.png",
+          "x": 450,
+          "y": 348,
+          "w": 1804,
+          "h": 3908,
+          "r": 8
+        },
+        "samsung_s24u_tihui": {
+          "file": "samsung_s24u_tihui.png",
+          "x": 450,
+          "y": 348,
+          "w": 1804,
+          "h": 3908,
+          "r": 8
+        },
+        "samsung_s24u_tiyu": {
+          "file": "samsung_s24u_tiyu.png",
+          "x": 450,
+          "y": 348,
+          "w": 1804,
+          "h": 3908,
+          "r": 8
+        },
+        "samsung_s24u_tixia": {
+          "file": "samsung_s24u_tixia.png",
+          "x": 450,
+          "y": 348,
+          "w": 1804,
+          "h": 3908,
+          "r": 8
+        },
+        "samsung_s24u_tihei": {
+          "file": "samsung_s24u_tihei.png",
+          "x": 450,
+          "y": 348,
+          "w": 1804,
+          "h": 3908,
+          "r": 8
+        }
+      }
+    },
+    "samsung_s25u": {
+      "name": "三星 Galaxy S25 Ultra",
+      "zip": "samsung_s25u.zip",
+      "size": 5287759,
+      "sha256": "373e8d5d30477c734f48a99ea75c48cd18e37c40baad614b1e36456455b6dfb8",
+      "colors": {
+        "samsung_s25u_timo": {
+          "file": "samsung_s25u_timo.png",
+          "x": 432,
+          "y": 327,
+          "w": 1805,
+          "h": 3897,
+          "r": 60
+        },
+        "samsung_s25u_tiying": {
+          "file": "samsung_s25u_tiying.png",
+          "x": 432,
+          "y": 327,
+          "w": 1805,
+          "h": 3897,
+          "r": 60
+        },
+        "samsung_s25u_tirou": {
+          "file": "samsung_s25u_tirou.png",
+          "x": 432,
+          "y": 327,
+          "w": 1805,
+          "h": 3897,
+          "r": 60
+        },
+        "samsung_s25u_tifei": {
+          "file": "samsung_s25u_tifei.png",
+          "x": 432,
+          "y": 327,
+          "w": 1805,
+          "h": 3897,
+          "r": 60
+        },
+        "samsung_s25u_tihuibyin": {
+          "file": "samsung_s25u_tihuibyin.png",
+          "x": 432,
+          "y": 327,
+          "w": 1805,
+          "h": 3897,
+          "r": 60
+        },
+        "samsung_s25u_tiyin": {
+          "file": "samsung_s25u_tiyin.png",
+          "x": 432,
+          "y": 327,
+          "w": 1805,
+          "h": 3897,
+          "r": 60
+        },
+        "samsung_s25u_tiwu": {
+          "file": "samsung_s25u_tiwu.png",
+          "x": 432,
+          "y": 327,
+          "w": 1805,
+          "h": 3897,
+          "r": 60
+        }
+      }
+    },
+    "samsung_s26u": {
+      "name": "三星 Galaxy S26 Ultra",
+      "zip": "samsung_s26u.zip",
+      "size": 4686269,
+      "sha256": "f608d84b1e65114d841d4b733a3cc435b9cdeb115e688009237a9021f88dda1a",
+      "colors": {
+        "samsung_s26u_xingmu": {
+          "file": "samsung_s26u_xingmu.png",
+          "x": 439,
+          "y": 329,
+          "w": 1804,
+          "h": 3910,
+          "r": 107
+        },
+        "samsung_s26u_xingyao": {
+          "file": "samsung_s26u_xingyao.png",
+          "x": 439,
+          "y": 329,
+          "w": 1804,
+          "h": 3910,
+          "r": 107
+        },
+        "samsung_s26u_xingyue": {
+          "file": "samsung_s26u_xingyue.png",
+          "x": 439,
+          "y": 329,
+          "w": 1804,
+          "h": 3910,
+          "r": 107
+        },
+        "samsung_s26u_xingcheng": {
+          "file": "samsung_s26u_xingcheng.png",
+          "x": 439,
+          "y": 329,
+          "w": 1804,
+          "h": 3910,
+          "r": 107
+        },
+        "samsung_s26u_xinggui": {
+          "file": "samsung_s26u_xinggui.png",
+          "x": 439,
+          "y": 329,
+          "w": 1804,
+          "h": 3910,
+          "r": 107
+        },
+        "samsung_s26u_xingshuang": {
+          "file": "samsung_s26u_xingshuang.png",
+          "x": 439,
+          "y": 329,
+          "w": 1804,
+          "h": 3910,
+          "r": 107
+        }
+      }
+    },
+    "vivo_vivox100": {
+      "name": "vivo X100",
+      "zip": "vivo_vivox100.zip",
+      "size": 4354207,
+      "sha256": "0305a1ac813791f701a513ea4aaddb774fd7da3bf563af37f13d67bcd48b6373",
+      "colors": {
+        "vivo_vivox100_v1": {
+          "file": "vivo_vivox100_v1.png",
+          "x": 422,
+          "y": 240,
+          "w": 1838,
+          "h": 4085,
+          "r": 94
+        },
+        "vivo_vivox100_v0": {
+          "file": "vivo_vivox100_v0.png",
+          "x": 422,
+          "y": 240,
+          "w": 1838,
+          "h": 4085,
+          "r": 94
+        },
+        "vivo_vivox100_v2": {
+          "file": "vivo_vivox100_v2.png",
+          "x": 422,
+          "y": 240,
+          "w": 1838,
+          "h": 4085,
+          "r": 94
+        },
+        "vivo_vivox100_v3": {
+          "file": "vivo_vivox100_v3.png",
+          "x": 422,
+          "y": 240,
+          "w": 1838,
+          "h": 4085,
+          "r": 94
+        }
+      }
+    },
+    "vivo_vivox200promini": {
+      "name": "vivo X200 Pro mini",
+      "zip": "vivo_vivox200promini.zip",
+      "size": 4605498,
+      "sha256": "eced462c909c6a3dbba0c67ebf402809602ec35dd9e2671ac5dc04a7a435e37f",
+      "colors": {
+        "vivo_vivox200promini_v6": {
+          "file": "vivo_vivox200promini_v6.png",
+          "x": 339,
+          "y": 160,
+          "w": 1805,
+          "h": 3907,
+          "r": 198
+        },
+        "vivo_vivox200promini_v4": {
+          "file": "vivo_vivox200promini_v4.png",
+          "x": 339,
+          "y": 160,
+          "w": 1805,
+          "h": 3907,
+          "r": 198
+        },
+        "vivo_vivox200promini_v5": {
+          "file": "vivo_vivox200promini_v5.png",
+          "x": 339,
+          "y": 160,
+          "w": 1805,
+          "h": 3907,
+          "r": 198
+        },
+        "vivo_vivox200promini_v8": {
+          "file": "vivo_vivox200promini_v8.png",
+          "x": 339,
+          "y": 160,
+          "w": 1805,
+          "h": 3907,
+          "r": 198
+        },
+        "vivo_vivox200promini_v7": {
+          "file": "vivo_vivox200promini_v7.png",
+          "x": 339,
+          "y": 160,
+          "w": 1805,
+          "h": 3907,
+          "r": 198
+        }
+      }
+    },
+    "vivo_vivox300": {
+      "name": "vivo X300",
+      "zip": "vivo_vivox300.zip",
+      "size": 4890341,
+      "sha256": "7f0b79e3c96a2d78affc681af250646d1a18149a00fb401fc6dc684975d2a190",
+      "colors": {
+        "vivo_vivox300_v10": {
+          "file": "vivo_vivox300_v10.png",
+          "x": 396,
+          "y": 263,
+          "w": 1805,
+          "h": 3908,
+          "r": 191
+        },
+        "vivo_vivox300_v13": {
+          "file": "vivo_vivox300_v13.png",
+          "x": 396,
+          "y": 263,
+          "w": 1805,
+          "h": 3908,
+          "r": 191
+        },
+        "vivo_vivox300_v11": {
+          "file": "vivo_vivox300_v11.png",
+          "x": 396,
+          "y": 263,
+          "w": 1805,
+          "h": 3908,
+          "r": 191
+        },
+        "vivo_vivox300_v12": {
+          "file": "vivo_vivox300_v12.png",
+          "x": 396,
+          "y": 263,
+          "w": 1805,
+          "h": 3908,
+          "r": 191
+        },
+        "vivo_vivox300_v9": {
+          "file": "vivo_vivox300_v9.png",
+          "x": 396,
+          "y": 263,
+          "w": 1805,
+          "h": 3908,
+          "r": 191
+        }
+      }
+    },
+    "vivo_vivox300pro": {
+      "name": "vivo X300 Pro",
+      "zip": "vivo_vivox300pro.zip",
+      "size": 3971041,
+      "sha256": "6d36711d2f8517a0a1c2911b2f07bea8f04f045a3a396bf28079edc82abf7acd",
+      "colors": {
+        "vivo_vivox300pro_v15": {
+          "file": "vivo_vivox300pro_v15.png",
+          "x": 455,
+          "y": 332,
+          "w": 1805,
+          "h": 3954,
+          "r": 198
+        },
+        "vivo_vivox300pro_v17": {
+          "file": "vivo_vivox300pro_v17.png",
+          "x": 455,
+          "y": 332,
+          "w": 1805,
+          "h": 3954,
+          "r": 198
+        },
+        "vivo_vivox300pro_v14": {
+          "file": "vivo_vivox300pro_v14.png",
+          "x": 455,
+          "y": 332,
+          "w": 1805,
+          "h": 3954,
+          "r": 198
+        },
+        "vivo_vivox300pro_v16": {
+          "file": "vivo_vivox300pro_v16.png",
+          "x": 455,
+          "y": 332,
+          "w": 1805,
+          "h": 3954,
+          "r": 198
+        }
+      }
+    },
+    "vivo_vivox300ultra": {
+      "name": "vivo X300 Ultra",
+      "zip": "vivo_vivox300ultra.zip",
+      "size": 3228442,
+      "sha256": "9a537f344bbe7cefab30e924f9da114c78c6b8933c84379b19caec5df3de664c",
+      "colors": {
+        "vivo_vivox300ultra_v19": {
+          "file": "vivo_vivox300ultra_v19.png",
+          "x": 420,
+          "y": 270,
+          "w": 1804,
+          "h": 3963,
+          "r": 133
+        },
+        "vivo_vivox300ultra_v18": {
+          "file": "vivo_vivox300ultra_v18.png",
+          "x": 420,
+          "y": 270,
+          "w": 1804,
+          "h": 3963,
+          "r": 133
+        },
+        "vivo_vivox300ultra_v20": {
+          "file": "vivo_vivox300ultra_v20.png",
+          "x": 420,
+          "y": 270,
+          "w": 1804,
+          "h": 3963,
+          "r": 133
+        }
+      }
+    },
+    "vivo_vivox500": {
+      "name": "vivo X500",
+      "zip": "vivo_vivox500.zip",
+      "size": 3736167,
+      "sha256": "6faad98a3b8ecf471eaf1d6aac0da574e0f8f3a12dfec43dd7ff4a3b40791860",
+      "colors": {
+        "vivo_vivox500_v24": {
+          "file": "vivo_vivox500_v24.png",
+          "x": 373,
+          "y": 217,
+          "w": 1805,
+          "h": 3920,
+          "r": 277
+        },
+        "vivo_vivox500_v23": {
+          "file": "vivo_vivox500_v23.png",
+          "x": 373,
+          "y": 217,
+          "w": 1805,
+          "h": 3920,
+          "r": 277
+        },
+        "vivo_vivox500_v21": {
+          "file": "vivo_vivox500_v21.png",
+          "x": 373,
+          "y": 217,
+          "w": 1805,
+          "h": 3920,
+          "r": 277
+        },
+        "vivo_vivox500_v22": {
+          "file": "vivo_vivox500_v22.png",
+          "x": 373,
+          "y": 217,
+          "w": 1805,
+          "h": 3920,
+          "r": 277
+        }
+      }
+    },
+    "xiaomi_17": {
+      "name": "小米 17 Ultra",
+      "zip": "xiaomi_17.zip",
+      "size": 239361,
+      "sha256": "e683e8155a14dc8000c105b094ea7b1f17d9237b580f7da5b5b3e9a6586c05f8",
+      "colors": {
+        "xiaomi_17_ultra": {
+          "file": "xiaomi_17_ultra.png",
+          "x": 627,
+          "y": 70,
+          "w": 580,
+          "h": 1260,
+          "r": 76
+        }
+      }
+    },
+    "iqoo16": {
+      "name": "iQOO 16",
+      "zip": "iqoo16.zip",
+      "size": 2362747,
+      "sha256": "267e563d0841392e8ab571b3f3c7eedb579347893b979739d4e5556ad00c1969",
+      "colors": {
+        "iqoo16_chuanqi": {
+          "file": "iqoo16_chuanqi.png",
+          "x": 250,
+          "y": 201,
+          "w": 1804,
+          "h": 3967,
+          "r": 189
+        },
+        "iqoo16_saidao": {
+          "file": "iqoo16_saidao.png",
+          "x": 250,
+          "y": 201,
+          "w": 1804,
+          "h": 3967,
+          "r": 189
+        },
+        "iqoo16_zhuguang": {
+          "file": "iqoo16_zhuguang.png",
+          "x": 250,
+          "y": 201,
+          "w": 1804,
+          "h": 3967,
+          "r": 189
+        }
+      }
+    }
+  }
+}

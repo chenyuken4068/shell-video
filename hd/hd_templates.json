@@ -1314,6 +1314,38 @@
           "r": 76
         }
       }
+    },
+    "iqoo16": {
+      "name": "iQOO 16",
+      "zip": "iqoo16.zip",
+      "size": 2362747,
+      "sha256": "267e563d0841392e8ab571b3f3c7eedb579347893b979739d4e5556ad00c1969",
+      "colors": {
+        "iqoo16_chuanqi": {
+          "file": "iqoo16_chuanqi.png",
+          "x": 250,
+          "y": 201,
+          "w": 1804,
+          "h": 3967,
+          "r": 189
+        },
+        "iqoo16_saidao": {
+          "file": "iqoo16_saidao.png",
+          "x": 250,
+          "y": 201,
+          "w": 1804,
+          "h": 3967,
+          "r": 189
+        },
+        "iqoo16_zhuguang": {
+          "file": "iqoo16_zhuguang.png",
+          "x": 250,
+          "y": 201,
+          "w": 1804,
+          "h": 3967,
+          "r": 189
+        }
+      }
     }
   }
 }
