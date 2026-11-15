@@ -977,6 +977,17 @@ class _ImageViewerScreenState extends State<ImageViewerScreen> {
                 decoration: BoxDecoration(
                   color: AppColors.fill,
                   shape: BoxShape.circle,
+        border: Border.all(
+          color: Colors.white.withValues(alpha: .85),
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: .06),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
                 ),
                 child:
                     Icon(Icons.chevron_left, size: 22, color: AppColors.text),
@@ -1001,6 +1012,17 @@ class _ImageViewerScreenState extends State<ImageViewerScreen> {
                 decoration: BoxDecoration(
                   color: AppColors.fill,
                   shape: BoxShape.circle,
+        border: Border.all(
+          color: Colors.white.withValues(alpha: .85),
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: .06),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
                 ),
                 child: Icon(Icons.more_horiz,
                     size: 20, color: AppColors.textSub),
@@ -1456,6 +1478,17 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                 decoration: BoxDecoration(
                   color: AppColors.fill,
                   shape: BoxShape.circle,
+        border: Border.all(
+          color: Colors.white.withValues(alpha: .85),
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: .06),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
                 ),
                 child:
                     Icon(Icons.chevron_left, size: 22, color: AppColors.text),
@@ -1480,6 +1513,17 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                 decoration: BoxDecoration(
                   color: AppColors.fill,
                   shape: BoxShape.circle,
+        border: Border.all(
+          color: Colors.white.withValues(alpha: .85),
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: .06),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
                 ),
                 child: Icon(Icons.more_horiz,
                     size: 20, color: AppColors.textSub),

@@ -108,11 +108,11 @@ const Map<String, List<ColorVariant>> kColorVariants = {
   ],
     // ── iQOO 15 ──
     'builtin_iqoo15_chuanqi': [
-      ColorVariant('传奇版', 'builtin_iqoo15_chuanqi', 0xFFC8C8C8),
-      ColorVariant('凌云', 'builtin_iqoo15_lingyun', 0xFF999D9F),
-      ColorVariant('旷野', 'builtin_iqoo15_kuangye', 0xFFC0C6A3),
-      ColorVariant('王者荣耀十周年典藏版', 'builtin_iqoo15_wangzhe', 0xFF6C6E71),
-      ColorVariant('赛道版', 'builtin_iqoo15_saidao', 0xFF6B6D70),
+      ColorVariant('传奇版', 'builtin_iqoo15_chuanqi', 0xFFE9E9E9),
+      ColorVariant('凌云', 'builtin_iqoo15_lingyun', 0xFFC5C5C6),
+      ColorVariant('旷野', 'builtin_iqoo15_kuangye', 0xFFC8CEAB),
+      ColorVariant('典藏版', 'builtin_iqoo15_wangzhe', 0xFF344371),
+      ColorVariant('赛道版', 'builtin_iqoo15_saidao', 0xFF333538),
     ],
     // ── iQOO 15 Ultra ──
     'builtin_iqoo15ultra_silver2049': [
@@ -179,23 +179,23 @@ const Map<String, List<ColorVariant>> kColorVariants = {
     ],
     // ── 三星 Galaxy S25 Ultra ──
     'builtin_samsung_s25u_tiyin': [
-      ColorVariant('钛银蓝', 'builtin_samsung_s25u_tiyin', 0xFFAEAEB0),
-      ColorVariant('钛墨黑', 'builtin_samsung_s25u_timo', 0xFF575A62),
-      ColorVariant('钛影黑', 'builtin_samsung_s25u_tiying', 0xFFABA5A1),
-      ColorVariant('钛柔金', 'builtin_samsung_s25u_tirou', 0xFFABA5A1),
-      ColorVariant('钛翡绿', 'builtin_samsung_s25u_tifei', 0xFFABA5A1),
-      ColorVariant('钛辉银', 'builtin_samsung_s25u_tihuibyin', 0xFFAEAEB0),
-      ColorVariant('钛雾灰', 'builtin_samsung_s25u_tiwu', 0xFFABA5A1),
+      ColorVariant('钛银蓝', 'builtin_samsung_s25u_tiyin', 0xFFC3C7D4),
+      ColorVariant('钛墨黑', 'builtin_samsung_s25u_timo', 0xFF2A2D32),
+      ColorVariant('钛影黑', 'builtin_samsung_s25u_tiying', 0xFF27282C),
+      ColorVariant('钛柔金', 'builtin_samsung_s25u_tirou', 0xFFECDCD0),
+      ColorVariant('钛翡绿', 'builtin_samsung_s25u_tifei', 0xFF9FA498),
+      ColorVariant('钛辉银', 'builtin_samsung_s25u_tihuibyin', 0xFFD0D0D2),
+      ColorVariant('钛雾灰', 'builtin_samsung_s25u_tiwu', 0xFFA39E99),
     ],
     // ── 三星 Galaxy S24 Ultra ──
     'builtin_samsung_s24u_timu': [
-      ColorVariant('钛暮紫', 'builtin_samsung_s24u_timu', 0xFF7E7772),
-      ColorVariant('钛岭绿', 'builtin_samsung_s24u_tiling', 0xFF686765),
-      ColorVariant('钛川蓝', 'builtin_samsung_s24u_tichuan', 0xFF686765),
-      ColorVariant('钛灰', 'builtin_samsung_s24u_tihui', 0xFF7D7671),
-      ColorVariant('钛羽黄', 'builtin_samsung_s24u_tiyu', 0xFF898166),
-      ColorVariant('钛霞橙', 'builtin_samsung_s24u_tixia', 0xFF89827C),
-      ColorVariant('钛黑', 'builtin_samsung_s24u_tihei', 0xFF676563),
+      ColorVariant('钛暮紫', 'builtin_samsung_s24u_timu', 0xFF38324A),
+      ColorVariant('钛岭绿', 'builtin_samsung_s24u_tiling', 0xFFDDE8D4),
+      ColorVariant('钛川蓝', 'builtin_samsung_s24u_tichuan', 0xFFCED5E2),
+      ColorVariant('钛灰', 'builtin_samsung_s24u_tihui', 0xFF87807A),
+      ColorVariant('钛羽黄', 'builtin_samsung_s24u_tiyu', 0xFFEADBAD),
+      ColorVariant('钛霞橙', 'builtin_samsung_s24u_tixia', 0xFFDF9F6F),
+      ColorVariant('钛黑', 'builtin_samsung_s24u_tihei', 0xFF373533),
     ],
     // ── 荣耀 Magic9 Pro Max ──
     'builtin_honor_magic9pm_yinyan': [

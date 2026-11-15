@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'dart:ui' show ImageFilter;
+
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -209,39 +211,17 @@ class _UpdateScreenState extends State<UpdateScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final safeTop = MediaQuery.paddingOf(context).top;
     return Scaffold(
       backgroundColor: AppColors.bg,
+      extendBodyBehindAppBar: true,
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(safeTop + 64),
+        child: _topBar(context),
+      ),
       body: Column(
         children: [
-          // 玻璃顶栏（同模板库 / 设置）
-          SafeArea(
-            bottom: false,
-            child: SizedBox(
-              height: 56,
-              child: Row(
-                children: [
-                  const SizedBox(width: 12),
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: AppColors.fill,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(Icons.chevron_left,
-                          size: 22, color: AppColors.text),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  const Text('版本更新',
-                      style: TextStyle(
-                          fontSize: 22, fontWeight: FontWeight.w800)),
-                ],
-              ),
-            ),
-          ),
+          const SizedBox(height: 8),
           Expanded(
             child: _checking
                 ? Center(
@@ -261,7 +241,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
                     ),
                   )
                 : ListView(
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
                     children: [
                       _hero(),
                       _changelogCard(),
@@ -275,6 +255,94 @@ class _UpdateScreenState extends State<UpdateScreen> {
           ),
           // 底部固定主按钮
           if (!_checking) _bottomButton(),
+        ],
+      ),
+    );
+  }
+
+  /// 玻璃顶栏（照模板库：上实下虚 + 模糊）
+  Widget _topBar(BuildContext context) {
+    final safeTop = MediaQuery.paddingOf(context).top;
+    return SizedBox(
+      height: safeTop + 64,
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: ClipRect(
+              child: ShaderMask(
+                blendMode: BlendMode.dstIn,
+                shaderCallback: (rect) => const LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.black,
+                    Colors.black,
+                    Color(0x8C000000),
+                    Color(0x00000000),
+                  ],
+                  stops: [0.0, 0.70, 0.88, 1.0],
+                ).createShader(rect),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          AppColors.bg.withValues(alpha: .98),
+                          AppColors.bg.withValues(alpha: .92),
+                          AppColors.bg.withValues(alpha: .55),
+                          AppColors.bg.withValues(alpha: 0),
+                        ],
+                        stops: const [0.0, 0.62, 0.84, 1.0],
+                      ),
+                    ),
+                    child: const SizedBox.expand(),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            left: 12,
+            right: 14,
+            top: safeTop + 10,
+            height: 44,
+            child: Row(
+                children: [
+                  const SizedBox(width: 12),
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: AppColors.fill,
+                        shape: BoxShape.circle,
+        border: Border.all(
+          color: Colors.white.withValues(alpha: .85),
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: .06),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
+                      ),
+                      child: Icon(Icons.chevron_left,
+                          size: 22, color: AppColors.text),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  const Text('版本更新',
+                      style: TextStyle(
+                          fontSize: 22, fontWeight: FontWeight.w800)),
+                ],
+              ),
+          ),
         ],
       ),
     );

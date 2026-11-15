@@ -25,6 +25,7 @@ import '../services/app_settings.dart';
 import '../services/composer.dart';
 
 import '../services/app_log.dart';
+import '../services/hd_templates.dart';
 
 import '../services/longshot_composer.dart';
 import '../services/motion_diag.dart';
@@ -1182,6 +1183,12 @@ class _ComposeScreenState extends State<ComposeScreen>
       final list = await TemplateStore().load();
       final m = <String, String>{};
       for (final v in _colorVariants) {
+        // 按需下载的高清壳图优先
+        final hd = HdTemplates.casePathOf(v.templateId);
+        if (hd != null) {
+          m[v.templateId] = hd;
+          continue;
+        }
         for (final e in list) {
           if (e.id == v.templateId) m[v.templateId] = e.casePath;
         }
@@ -1201,9 +1208,10 @@ class _ComposeScreenState extends State<ComposeScreen>
     }
     if (path == null) {
       try {
+        path ??= HdTemplates.casePathOf(v.templateId);
         final list = await TemplateStore().load();
         for (final e in list) {
-          if (e.id == v.templateId) path = e.casePath;
+          if (e.id == v.templateId) path ??= e.casePath;
         }
       } catch (_) {}
     }
@@ -2248,7 +2256,7 @@ class _ComposeScreenState extends State<ComposeScreen>
         shellDx: _shellDx,
         contentQuarterTurns: _contentTurns,
         shellDy: _shellDy,
-        template: _activeTemplate,
+        template: await Composer.boostTemplate(_activeTemplate),
         contentPath: content,
         outputPath: out,
         isVideo: isVideo,
@@ -2345,7 +2353,7 @@ class _ComposeScreenState extends State<ComposeScreen>
           shellDx: _shellDx,
         contentQuarterTurns: _contentTurns,
           shellDy: _shellDy,
-          template: _activeTemplate,
+          template: await Composer.boostTemplate(_activeTemplate),
           contentPath: _videoPath,
           outputPath: out,
           isVideo: true,
@@ -2390,7 +2398,7 @@ class _ComposeScreenState extends State<ComposeScreen>
           shellDx: _shellDx,
         contentQuarterTurns: _contentTurns,
           shellDy: _shellDy,
-          template: _activeTemplate,
+          template: await Composer.boostTemplate(_activeTemplate),
           videoPath: _videoPath!,
           info: _info!,
           outputPath: out,
@@ -2558,7 +2566,7 @@ class _ComposeScreenState extends State<ComposeScreen>
         shellDx: _shellDx,
         contentQuarterTurns: _contentTurns,
         shellDy: _shellDy,
-        template: _activeTemplate,
+        template: await Composer.boostTemplate(_activeTemplate),
         videoPath: _videoPath!,
         info: _info!,
         outputPath: out,

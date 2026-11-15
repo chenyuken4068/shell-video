@@ -5,8 +5,6 @@ import 'dart:io';
 
 import 'dart:typed_data';
 
-
-
 import 'package:file_picker/file_picker.dart';
 
 import 'package:flutter/material.dart';
@@ -17,8 +15,6 @@ import 'package:path_provider/path_provider.dart';
 
 import 'package:share_plus/share_plus.dart';
 
-
-
 import '../models/shell_template.dart';
 
 import '../services/app_settings.dart';
@@ -26,6 +22,7 @@ import '../services/app_settings.dart';
 import '../services/template_pack.dart';
 
 import '../services/template_colors.dart';
+import '../services/hd_templates.dart';
 import '../services/template_store.dart';
 
 import '../widgets/main_shell.dart' show gTplGroups, gTplHidden;
@@ -34,9 +31,6 @@ import '../widgets/group_bar.dart';
 import 'calibrate_screen.dart';
 
 import 'compose_screen.dart';
-
-
-
 
 /// 机型目录项
 
@@ -56,8 +50,6 @@ class _Model {
 
   final String? displayName;
 
-
-
   const _Model({
 
     required this.brand,
@@ -74,13 +66,9 @@ class _Model {
 
   });
 
-
-
   String get fullName => displayName ?? '$brand $model';
 
 }
-
-
 
 const _kModels = <_Model>[
 
@@ -118,9 +106,6 @@ const _kModels = <_Model>[
 
   // OPPO（含新合入的内置模板：OPPO / 一加 / 真我 都归在 OPPO 品牌下）
 
-
-
-
   _Model(brand: 'OPPO', series: 'Find 系列', model: 'Find X10 Pro Max', displayName: 'OPPO Find X10 Pro Max', templateId: 'builtin_oppo_findx10promax_moonwhite'),
     _Model(brand: 'OPPO', series: 'Find 系列', model: 'Find X9S Pro', displayName: 'OPPO Find X9S Pro', templateId: 'builtin_oppo_findx9spro_freewhite'),
     _Model(brand: 'OPPO', series: 'Find 系列', model: 'Find X9 Ultra', displayName: 'OPPO Find X9 Ultra', templateId: 'builtin_oppo_findx9ultra_glacier'),
@@ -147,18 +132,7 @@ _Model(brand: 'iQOO', series: '数字系列', model: 'iQOO 16', displayName: 'iQ
 _Model(brand: 'iQOO', series: '数字系列', model: 'iQOO 15', displayName: 'iQOO 15', templateId: 'builtin_iqoo15_chuanqi'),
 _Model(brand: 'iQOO', series: 'Neo 系列', model: 'iQOO Neo11', displayName: 'iQOO Neo11'),
 
-
-
-
-
   // vivo（含内置模板）
-
-
-
-
-
-
-
 
   // 三星（含内置模板）
 
@@ -173,15 +147,15 @@ _Model(brand: 'iQOO', series: 'Neo 系列', model: 'iQOO Neo11', displayName: 'i
 
   _Model(brand: '三星', series: 'S 系列', model: 'Galaxy S25 Ultra', displayName: '三星 Galaxy S25 Ultra', templateId: 'builtin_samsung_s25u_tiyin'),
 
-  _Model(brand: '三星', series: 'S 系列', model: 'S25'),
+  
 
   _Model(brand: '三星', series: 'S 系列', model: 'S24 Ultra', displayName: '三星 Galaxy S24 Ultra', templateId: 'builtin_samsung_s24u_timu'),
 
-  _Model(brand: '三星', series: 'S 系列', model: 'S24'),
+  
 
   // 荣耀（含内置模板）
 
-  _Model(brand: '荣耀', series: '数字系列', model: '600', displayName: '荣耀 600', templateId: 'builtin_honor_600'),
+  
 
   _Model(brand: '荣耀', series: 'Magic 系列', model: 'Magic9 Pro Max', displayName: '荣耀 Magic9 Pro Max', templateId: 'builtin_honor_magic9pm_yinyan'),
 _Model(brand: '荣耀', series: 'Magic 系列', model: 'Magic9 超能版', displayName: '荣耀 Magic9 超能版', templateId: 'builtin_honor_magic9x_kaichang'),
@@ -198,8 +172,6 @@ _Model(brand: '荣耀', series: 'Magic 系列', model: 'Magic7 Pro'),
 
 ];
 
-
-
 /// 模板库二级页：品牌分类 + 机型列表
 
 class TplLibraryScreen extends StatefulWidget {
@@ -209,25 +181,17 @@ class TplLibraryScreen extends StatefulWidget {
   /// true = 实况创作入口（模板选完进实况模式合成台）
   final bool liveMode;
 
-
-
   /// 可注入的数据源（测试用；为空时使用真实 TemplateStore）
 
   final TemplateStore? store;
-
-
 
   /// true = 选模板后进入图片创作台；false = 视频合成台
 
   final bool imageMode;
 
-
-
   /// true = 模板库管理模式（查看全部自制模板，可长按删除）
 
   final bool manageMode;
-
-
 
   const TplLibraryScreen({
 
@@ -244,15 +208,11 @@ class TplLibraryScreen extends StatefulWidget {
 
   });
 
-
-
   @override
 
   State<TplLibraryScreen> createState() => _TplLibraryScreenState();
 
 }
-
-
 
 class _TplLibraryScreenState extends State<TplLibraryScreen> {
 
@@ -274,8 +234,6 @@ class _TplLibraryScreenState extends State<TplLibraryScreen> {
     '三星',
 
     '荣耀',];
-
-
 
   /// 当前显示顺序：用户顺序 → 过滤隐藏 → 漏掉的分组自动补到末尾
 
@@ -327,8 +285,6 @@ List<String> get _chips {
     }
   }
 
-
-
   late String _brand =
       widget.initialBrand ?? (_chips.isEmpty ? '自制抠图' : _chips.first);
 
@@ -336,19 +292,25 @@ List<String> get _chips {
 
   bool _loading = true;
 
-
-
   @override
 
   void initState() {
 
     super.initState();
 
+    HdTemplates.tick.addListener(_onHdTick);
+
+    HdTemplates.init();
+
     _load();
 
   }
 
+  void _onHdTick() {
 
+    if (mounted) setState(() {});
+
+  }
 
   Future<void> _load() async {
 
@@ -380,16 +342,9 @@ List<String> get _chips {
 
   }
 
-
-
-
-
-
   /// 全部内置分组（含被隐藏的），用于排序弹窗展示
 
   static const List<String> _allGroups = _defaultChips;
-
-
 
   /// 当前完整顺序（含隐藏项）：用户顺序 → 补上漏掉的分组
 
@@ -413,14 +368,10 @@ List<String> get _chips {
 
   }
 
-
-
   /// 自制类分组（自制抠图 / 自制透明）
 
   bool get _isCustomTab =>
       _brand == '自制' || _brand == '自制抠图' || _brand == '自制透明';
-
-
 
   List get _shown {
 
@@ -460,8 +411,6 @@ List<String> get _chips {
     return _kModels.where((m) => m.brand == _brand && !m.isCommon).toList();
 
   }
-
-
 
   /// 合成台统一入口：**透明模板 → 透明合成台；普通（抠图）模板 → 普通合成台**。
 
@@ -503,15 +452,11 @@ List<String> get _chips {
 
   }
 
-
-
   void _openCustom(ShellTemplate t) {
 
     _pushCompose(t);
 
   }
-
-
 
   bool _isBuiltIn(_Model m) {
 
@@ -521,22 +466,65 @@ List<String> get _chips {
 
   }
 
-
-
   ShellTemplate? _templateOf(_Model m) {
-
     if (m.templateId == null) return null;
-
+    // 已下载高清 → 优先用高清壳图 + 高清屏幕框
+    final hd = HdTemplates.buildTemplate(m.templateId, m.fullName);
+    if (hd != null) return hd;
     for (final t in _templates) {
-
       if (t.id == m.templateId) return t;
-
     }
-
     return null;
-
   }
 
+  /// 未下载高清模板的悬浮提示（样式同图库保存成功）
+  void _hdHint(_Model m) {
+    final busy = HdTemplates.progressOf(m.templateId) != null;
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          margin: const EdgeInsets.fromLTRB(16, 0, 16, 90),
+          duration: const Duration(seconds: 2),
+          content: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: AppColors.text.withValues(alpha: .88),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: Colors.white.withValues(alpha: .18)),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: .18),
+                  blurRadius: 18,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                Icon(busy ? Icons.downloading_rounded : Icons.download_rounded,
+                    size: 18, color: Colors.white),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    busy
+                        ? '「${m.fullName}」高清模板下载中…'
+                        : '「${m.fullName}」还未下载，点右侧下载键下载',
+                    style: const TextStyle(
+                        fontSize: 12.5,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+  }
 
 
   void _open(_Model m) {
@@ -564,8 +552,6 @@ List<String> get _chips {
       ));
 
   }
-
-
 
   /// 长按模板卡：可删除，也可切换「透明模板」标记（老模板归位用），两者共存
 
@@ -769,11 +755,7 @@ List<String> get _chips {
 
   }
 
-
-
   // ───────────────── 模板导出 / 导入 ─────────────────
-
-
 
   String _safeFileName(String name) {
 
@@ -784,8 +766,6 @@ List<String> get _chips {
     return s.isEmpty ? 'template' : s;
 
   }
-
-
 
   /// 打包成 .shtpl（放缓存目录），失败返回 null
 
@@ -817,8 +797,6 @@ List<String> get _chips {
 
   }
 
-
-
   /// 导出并分享（系统分享面板：微信 / QQ / 文件…）
 
   Future<void> _shareTemplate(ShellTemplate t) async {
@@ -844,8 +822,6 @@ List<String> get _chips {
     }
 
   }
-
-
 
   /// 保存模板到手机文件夹（系统选择器，无需存储权限）
 
@@ -881,8 +857,6 @@ List<String> get _chips {
 
   }
 
-
-
   /// 导入模板：选文件 → 校验 → 预览确认 → 写库（按透明标记自动分组）
 
   Future<void> _importTemplate() async {
@@ -910,8 +884,6 @@ List<String> get _chips {
       final data = await TemplatePack.parse(path, workDir: workDir);
 
       if (!mounted) return;
-
-
 
       final ok = await showDialog<bool>(
 
@@ -1008,8 +980,6 @@ List<String> get _chips {
 
       if (ok != true || !mounted) return;
 
-
-
       final t = await TemplatePack.importInto(
 
         path,
@@ -1038,8 +1008,6 @@ List<String> get _chips {
 
   }
 
-
-
   void _toast(String msg) {
 
     ScaffoldMessenger.of(context)
@@ -1049,8 +1017,6 @@ List<String> get _chips {
       ..showSnackBar(SnackBar(content: Text(msg), duration: const Duration(seconds: 2)));
 
   }
-
-
 
   @override
 
@@ -1119,6 +1085,17 @@ List<String> get _chips {
                       decoration: BoxDecoration(
                         color: AppColors.fill,
                         shape: BoxShape.circle,
+        border: Border.all(
+          color: Colors.white.withValues(alpha: .85),
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: .06),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
                       ),
                       child: Icon(Icons.chevron_left, size: 22, color: AppColors.text),
                     ),
@@ -1210,7 +1187,32 @@ List<String> get _chips {
 
                             thumbPath: t?.casePath,
 
-                            onTap: () => _open(m),
+                            hdAvailable: HdTemplates.modelKeyOf(m.templateId) != null,
+
+                            hdDownloaded: HdTemplates.isDownloaded(m.templateId),
+
+                            hdProgress: HdTemplates.progressOf(m.templateId),
+
+                            hdSize: HdTemplates.modelOf(m.templateId)?.size ?? 0,
+
+                            onTap: () {
+                              // 未下载高清 → 只提示，不下载（下载键在右侧单独触发）
+                              if (HdTemplates.modelKeyOf(m.templateId) != null &&
+                                  !HdTemplates.isDownloaded(m.templateId)) {
+                                _hdHint(m);
+                                return;
+                              }
+                              _open(m);
+                            },
+
+                            onDownload: () {
+                              final key = HdTemplates.modelKeyOf(m.templateId);
+                              if (key != null &&
+                                  !HdTemplates.isDownloaded(m.templateId) &&
+                                  HdTemplates.progressOf(m.templateId) == null) {
+                                HdTemplates.download(key);
+                              }
+                            },
 
                           ),
 
@@ -1247,8 +1249,6 @@ List<String> get _chips {
 
 }
 
-
-
 /// 自制分组为空时的引导（不提供导入入口，导入统一在「创作」页）
 
 class _EmptyHint extends StatelessWidget {
@@ -1256,11 +1256,7 @@ class _EmptyHint extends StatelessWidget {
   final bool transparent;
   final bool merged;
 
-
-
   const _EmptyHint({required this.transparent, this.merged = false});
-
-
 
   @override
 
@@ -1354,8 +1350,6 @@ class _EmptyHint extends StatelessWidget {
 
 }
 
-
-
 /// 机型卡（116 高横条）
 
 class _ModelCard extends StatelessWidget {
@@ -1366,9 +1360,12 @@ class _ModelCard extends StatelessWidget {
 
   final String? thumbPath;
 
+  final bool hdAvailable;
+  final bool hdDownloaded;
+  final double? hdProgress;
+  final int hdSize;
   final VoidCallback onTap;
-
-
+  final VoidCallback? onDownload;
 
   const _ModelCard({
 
@@ -1378,11 +1375,14 @@ class _ModelCard extends StatelessWidget {
 
     required this.thumbPath,
 
+    this.hdAvailable = false,
+    this.hdDownloaded = false,
+    this.hdProgress,
+    this.hdSize = 0,
     required this.onTap,
+    this.onDownload,
 
   });
-
-
 
   @override
 
@@ -1468,7 +1468,13 @@ class _ModelCard extends StatelessWidget {
 
                   Text(
 
-                    builtIn ? '已内置 · 可直接制作' : '待导入壳图',
+                    hdAvailable
+                        ? (hdProgress != null
+                            ? '下载中 ${(hdProgress! * 100).toStringAsFixed(0)}%'
+                            : hdDownloaded
+                                ? '已下载'
+                                : '未下载')
+                        : (builtIn ? '已内置 · 可直接制作' : '待导入壳图'),
 
                     style: TextStyle(
 
@@ -1476,7 +1482,7 @@ class _ModelCard extends StatelessWidget {
 
                       fontWeight: FontWeight.w600,
 
-                      color: builtIn ? AppColors.accent : AppColors.textSub,
+                      color: (hdAvailable || builtIn) ? AppColors.accent : AppColors.textSub,
 
                     ),
 
@@ -1492,7 +1498,24 @@ class _ModelCard extends StatelessWidget {
 
               padding: EdgeInsets.only(right: 16),
 
-              child: Icon(Icons.chevron_right, color: AppColors.textSub),
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: onDownload,
+                child: hdAvailable && !hdDownloaded
+                  ? (hdProgress != null
+                      ? SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            value: hdProgress,
+                            strokeWidth: 2.2,
+                            color: AppColors.accent,
+                          ),
+                        )
+                      : Icon(Icons.download_rounded,
+                          color: AppColors.accent, size: 22))
+                  : Icon(Icons.chevron_right, color: AppColors.textSub),
+              ),
 
             ),
 
@@ -1505,8 +1528,6 @@ class _ModelCard extends StatelessWidget {
     );
 
   }
-
-
 
   Widget _thumb() {
 
@@ -1575,8 +1596,6 @@ class _ModelCard extends StatelessWidget {
 
   }
 
-
-
   Widget _placeholder() {
 
     return Container(
@@ -1613,8 +1632,6 @@ class _ModelCard extends StatelessWidget {
 
 }
 
-
-
 /// 自制模板卡（导入标定保存的模板）
 
 class _CustomCard extends StatelessWidget {
@@ -1625,11 +1642,7 @@ class _CustomCard extends StatelessWidget {
 
   final VoidCallback onLongPress;
 
-
-
   const _CustomCard({required this.t, required this.onTap, required this.onLongPress});
-
-
 
   @override
 
@@ -1860,8 +1873,6 @@ class _CustomCard extends StatelessWidget {
 
   }
 
-
-
   Widget _ph() {
 
     return Container(
@@ -1892,10 +1903,6 @@ class _CustomCard extends StatelessWidget {
 
 }
 
-
-
-
-
 /// 分组排序弹窗：拖拽排序 + 逐项隐藏 + 恢复默认顺序
 
 class GroupSortSheet extends StatefulWidget {
@@ -1904,11 +1911,7 @@ class GroupSortSheet extends StatefulWidget {
 
   final List<String> hidden;
 
-
-
   const GroupSortSheet({required this.order, required this.hidden});
-
-
 
   @override
 
@@ -1916,15 +1919,11 @@ class GroupSortSheet extends StatefulWidget {
 
 }
 
-
-
 class GroupSortSheetState extends State<GroupSortSheet> {
 
   late List<String> _order = List<String>.from(widget.order);
 
   late Set<String> _hidden = widget.hidden.toSet();
-
-
 
   @override
 
@@ -2091,8 +2090,6 @@ class GroupSortSheetState extends State<GroupSortSheet> {
 
 }
 
-
-
 /// 分组默认顺序（与模板库内置顺序一致）
 
 const List<String> _kDefaultGroupOrder = [
@@ -2116,7 +2113,6 @@ const List<String> _kDefaultGroupOrder = [
   '荣耀',
 
 ];
-
 
 /// 打开「模板库排序」浮层（模板库页右上角 ≡ 已移除，入口在「我的 → 模板库排序」）
 Future<void> showGroupSortSheet(BuildContext context) async {

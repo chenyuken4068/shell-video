@@ -1677,6 +1677,17 @@ class _SettingsHeader extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: AppColors.fill,
                   shape: BoxShape.circle,
+        border: Border.all(
+          color: Colors.white.withValues(alpha: .85),
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: .06),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
                 ),
                 child: Icon(Icons.chevron_left,
                     size: 22, color: AppColors.text),
@@ -1734,7 +1745,24 @@ class _SettingsScreenState extends State<_SettingsScreen> {
         homeHidden: _s.homeHidden,
       );
 
+  @override
+  void initState() {
+    super.initState();
+    // 从磁盘重新读一次，避免进页面时用的是旧快照
+    SettingsStore().load().then((v) {
+      if (mounted) setState(() => _s = v);
+    });
+  }
+
   Future<void> _save() async {
+    // 只覆盖本页负责的字段，其它设置从磁盘读回后再写，避免互相冲掉
+    final cur = await SettingsStore().load();
+    _s = cur.copyWith(
+      autoSaveBg: _s.autoSaveBg,
+      autoPickBg: _s.autoPickBg,
+      bootAnim: _s.bootAnim,
+      themeMode: _s.themeMode,
+    );
     await SettingsStore().save(_s);
     gAutoPickBg.value = _s.autoPickBg;
     gThemeMode.value = AppTheme.parse(_s.themeMode);

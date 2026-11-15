@@ -6,6 +6,7 @@ import 'package:ffmpeg_kit_flutter_video/ffmpeg_kit.dart';
 import 'package:ffmpeg_kit_flutter_video/return_code.dart';
 
 import '../models/shell_template.dart';
+import 'app_log.dart';
 import 'corner_mask.dart';
 import 'image_utils.dart';
 import 'video_info.dart';
@@ -330,16 +331,35 @@ class Composer {
   /// 内容旋转 90° 次数：1=顺时针，3=逆时针（0=不转）
   int contentQuarterTurns = 0,
 }) async {
+    // ── 内容分辨率保护 ──
+    // 壳模板的屏幕孔可能很小（例：450×978），而输入图 1440×3136：
+    // 画布是按模板算的 → 输出比输入还小，内容被缩小、导出变糊。
+    // 这里按「内容 / 屏幕孔」的倍率把模板整体放大（上限 3x），保证内容按原分辨率合成。
+    final (contentW0, contentH0) = await imageSize(imagePath);
+    var boost = 1.0;
+    if (template.screenW > 0 && template.screenH > 0) {
+      final rotated = contentQuarterTurns == 1 || contentQuarterTurns == 3;
+      final cw0 = rotated ? contentH0 : contentW0;
+      final ch0 = rotated ? contentW0 : contentH0;
+      boost = math.max(cw0 / template.screenW, ch0 / template.screenH);
+      boost = boost.clamp(1.0, 3.0);
+    }
+    final k = boost;
+    final sw = math.max(1, (template.screenW * k).round());
+    final sh = math.max(1, (template.screenH * k).round());
+    final sx = (template.screenX * k).round();
+    final sy = (template.screenY * k).round();
+    final sr = math.max(0, (template.cornerR * k).round());
+
     // 与视频合成一致：R 角裁切 + 四边裁 2px + 画布外扩 2% 白底
-    final maskPath = await CornerMask.ensure(
-        template.screenW, template.screenH, template.cornerR);
+    final maskPath = await CornerMask.ensure(sw, sh, sr);
     final bgColor = background == 'white' ? 'white' : 'black';
 
     // 画布 = 壳框 ÷ 缩放 × 110%；壳框 = 屏幕框每边外扩「屏幕框宽 × 6%」
     // （ratio = 设计壳缩放 25%~100%：100% 时壳占画布 91%，四周留 10% 余量不会出框）
-    final shellPad = (template.screenW * 0.06).round();
-    final shellW = template.screenW + shellPad * 2;
-    final shellH = template.screenH + shellPad * 2;
+    final shellPad = (sw * 0.06).round();
+    final shellW = sw + shellPad * 2;
+    final shellH = sh + shellPad * 2;
     var cw, ch, ccx, ccy;
     {
       var bw = shellW / ratio * 1.1;
@@ -358,14 +378,14 @@ class Composer {
       if (cw.isOdd) cw += 1;
       if (ch.isOdd) ch += 1;
       // 壳（= 屏幕框每边外扩 shellPad）在画布居中 → 反推壳图左上角位置
-      ccx = ((cw - shellW) / 2).round() - (template.screenX - shellPad) + shellDx;
-      ccy = ((ch - shellH) / 2).round() - (template.screenY - shellPad) + shellDy;
+      ccx = ((cw - shellW) / 2).round() - (sx - shellPad) + shellDx;
+      ccy = ((ch - shellH) / 2).round() - (sy - shellPad) + shellDy;
     }
 
     final filter = StringBuffer()
-      ..write('[0:v]${contentQuarterTurns == 1 ? 'transpose=1,' : contentQuarterTurns == 3 ? 'transpose=2,' : ''}scale=${template.screenW + 4}:${template.screenH + 4}:'
-          'force_original_aspect_ratio=increase,crop=${template.screenW}:'
-          '${template.screenH}:((iw-${template.screenW})/2):((ih-${template.screenH})/2),'
+      ..write('[0:v]${contentQuarterTurns == 1 ? 'transpose=1,' : contentQuarterTurns == 3 ? 'transpose=2,' : ''}scale=${sw + 6}:${sh + 6}:'
+          'force_original_aspect_ratio=increase,crop=$sw:'
+          '$sh:((iw-$sw)/2):((ih-$sh)/2),'
           'setsar=1,format=rgba[v0];')
       ..write('[2:v]format=gray[mask];')
       ..write('[v0][mask]alphamerge[va];');
@@ -398,9 +418,11 @@ class Composer {
     }
 
     filter
-      ..write('[bg][va]overlay=${ccx + template.screenX}:${ccy + template.screenY}:'
+      ..write('[bg][va]overlay=${ccx + sx}:${ccy + sy}:'
           'format=auto[bgv];')
-      ..write('[bgv][1:v]overlay=$ccx:$ccy:format=auto,format=rgba[vout]');
+      ..write('[1:v]scale=trunc(iw*${k.toStringAsFixed(5)}/2)*2:'
+              'trunc(ih*${k.toStringAsFixed(5)}/2)*2:flags=lanczos[cs];')
+      ..write('[bgv][cs]overlay=$ccx:$ccy:format=auto,format=rgba[vout]');
 
     final cmd = [
       '-y',
@@ -420,6 +442,51 @@ class Composer {
       throw Exception('图片合成失败: ${session.getOutput()}');
     }
     return outputPath;
+  }
+
+
+  /// 内容分辨率保护（视频/实况用）：把模板整体放大到屏幕孔宽 ≈ target，
+  /// 否则 4K/1080P 视频会被塞进 450~800 宽的屏幕孔里，导出必然糊。
+  static Future<ShellTemplate> boostTemplate(
+    ShellTemplate t, {
+    double targetScreenW = 1600,
+    double maxK = 3.0,
+  }) async {
+    if (t.screenW <= 0 || t.caseWidth <= 0) return t;
+    final k = (targetScreenW / t.screenW).clamp(1.0, maxK);
+    if (k <= 1.02) return t;
+    final w = (t.caseWidth * k).round();
+    final h = (t.caseHeight * k).round();
+    final dir = Directory('${Directory.systemTemp.path}/shell_boost');
+    if (!dir.existsSync()) dir.createSync(recursive: true);
+    final out = File('${dir.path}/${t.id}_${w}.png');
+    if (!out.existsSync()) {
+      final cmd = [
+        '-y', '-i', _q(t.casePath),
+        '-vf', 'scale=$w:$h:flags=lanczos',
+        '-frames:v', '1', _q(out.path),
+      ].join(' ');
+      final s = await FFmpegKit.execute(cmd);
+      if (!ReturnCode.isSuccess(await s.getReturnCode())) {
+        AppLog.i('[放大模板] 失败 ${t.id}: ${await s.getOutput()}');
+        return t;
+      }
+      AppLog.i('[放大模板] ${t.id} ${t.caseWidth}x${t.caseHeight} → ${w}x$h (x${k.toStringAsFixed(2)})');
+    }
+    return ShellTemplate(
+      id: t.id,
+      name: t.name,
+      casePath: out.path,
+      caseWidth: w,
+      caseHeight: h,
+      screenX: (t.screenX * k).round(),
+      screenY: (t.screenY * k).round(),
+      screenW: (t.screenW * k).round(),
+      screenH: (t.screenH * k).round(),
+      cornerR: (t.cornerR * k).round(),
+      builtIn: t.builtIn,
+      isTransparent: t.isTransparent,
+    );
   }
 
   /// 画布宽高比在横屏要取倒数：横屏模板是竖屏模板逆时针转 90° 得到的，
