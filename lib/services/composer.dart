@@ -6,6 +6,7 @@ import 'package:ffmpeg_kit_flutter_video/ffmpeg_kit.dart';
 import 'package:ffmpeg_kit_flutter_video/return_code.dart';
 
 import '../models/shell_template.dart';
+import 'app_settings.dart';
 import 'app_log.dart';
 import 'corner_mask.dart';
 import 'image_utils.dart';
@@ -58,7 +59,10 @@ class Composer {
     final maskPath = await CornerMask.ensure(
         template.screenW, template.screenH, template.cornerR);
 
-    final bgColor = background == 'white' ? 'white' : 'black';
+    // 背景透明：画布用全透明色（PNG 输出保留 alpha），否则会变成白底
+    final bgColor = background == 'white'
+        ? 'white'
+        : (background == 'black' ? 'black' : 'black@0.0');
     final duration = info.durationSeconds.isFinite && info.durationSeconds > 0
         ? info.durationSeconds
         : 60.0;
@@ -99,12 +103,15 @@ class Composer {
       if (cw.isOdd) cw += 1;
       if (ch.isOdd) ch += 1;
       // 壳（= 屏幕框每边外扩 shellPad）在画布居中 → 反推壳图左上角位置
-      ccx = ((cw - shellW) / 2).round() - (template.screenX - shellPad) + shellDx;
-      ccy = ((ch - shellH) / 2).round() - (template.screenY - shellPad) + shellDy;
+      ccx = (((cw - shellW) / 2).round() - (template.screenX - shellPad) + shellDx).round();
+    _logGeom('视频合成', template, cw, ch, ccx, ccy,
+        shellDx: shellDx, shellDy: shellDy,
+        extra: 'ratio=$ratio canvasRatio=$canvasRatio bg=$background');
+      ccy = (((ch - shellH) / 2).round() - (template.screenY - shellPad) + shellDy).round();
     }
 
     final filter = StringBuffer()
-      ..write('[0:v]${contentQuarterTurns == 1 ? 'transpose=1,' : contentQuarterTurns == 3 ? 'transpose=2,' : ''}scale=${template.screenW + 4}:${template.screenH + 4}:'
+      ..write('[0:v]${contentQuarterTurns == 1 ? 'transpose=1,' : contentQuarterTurns == 3 ? 'transpose=2,' : ''}scale=${template.screenW + 4}:${template.screenH + 4}:flags=bicubic:'
           'force_original_aspect_ratio=increase,crop=${template.screenW}:'
           '${template.screenH}:((iw-${template.screenW})/2):((ih-${template.screenH})/2),'
           'setsar=1,format=rgba[v0];')
@@ -162,7 +169,7 @@ class Composer {
       '-filter_complex', "'$filter'",
       '-map', '[vout]',
       '-map', '0:a?',
-      '-r', fps.toStringAsFixed(3),
+      '-r', fps.round().toString(),
       '-c:a', 'aac',
       '-b:a', '160k',
       // 裁剪时长（-t 在输入之后 = 限制输出时长）
@@ -219,7 +226,10 @@ class Composer {
 }) async {
     final maskPath = await CornerMask.ensure(
         template.screenW, template.screenH, template.cornerR);
-    final bgColor = background == 'white' ? 'white' : 'black';
+    // 背景透明：画布用全透明色（PNG 输出保留 alpha），否则会变成白底
+    final bgColor = background == 'white'
+        ? 'white'
+        : (background == 'black' ? 'black' : 'black@0.0');
 
     // 画布：默认 = 壳 + 四周各扩短边1%；屏占比模式 = 屏幕/ratio，壳居中
     // 画布 = 壳框 ÷ 缩放 × 110%；壳框 = 屏幕框每边外扩「屏幕框宽 × 6%」
@@ -250,7 +260,7 @@ class Composer {
     }
 
     final filter = StringBuffer()
-      ..write('[0:v]${contentQuarterTurns == 1 ? 'transpose=1,' : contentQuarterTurns == 3 ? 'transpose=2,' : ''}scale=${template.screenW + 4}:${template.screenH + 4}:'
+      ..write('[0:v]${contentQuarterTurns == 1 ? 'transpose=1,' : contentQuarterTurns == 3 ? 'transpose=2,' : ''}scale=${template.screenW + 4}:${template.screenH + 4}:flags=bicubic:'
           'force_original_aspect_ratio=increase,crop=${template.screenW}:'
           '${template.screenH}:((iw-${template.screenW})/2):((ih-${template.screenH})/2),'
           'setsar=1,format=rgba[v0];')
@@ -353,7 +363,10 @@ class Composer {
 
     // 与视频合成一致：R 角裁切 + 四边裁 2px + 画布外扩 2% 白底
     final maskPath = await CornerMask.ensure(sw, sh, sr);
-    final bgColor = background == 'white' ? 'white' : 'black';
+    // 背景透明：画布用全透明色（PNG 输出保留 alpha），否则会变成白底
+    final bgColor = background == 'white'
+        ? 'white'
+        : (background == 'black' ? 'black' : 'black@0.0');
 
     // 画布 = 壳框 ÷ 缩放 × 110%；壳框 = 屏幕框每边外扩「屏幕框宽 × 6%」
     // （ratio = 设计壳缩放 25%~100%：100% 时壳占画布 91%，四周留 10% 余量不会出框）
@@ -378,8 +391,8 @@ class Composer {
       if (cw.isOdd) cw += 1;
       if (ch.isOdd) ch += 1;
       // 壳（= 屏幕框每边外扩 shellPad）在画布居中 → 反推壳图左上角位置
-      ccx = ((cw - shellW) / 2).round() - (sx - shellPad) + shellDx;
-      ccy = ((ch - shellH) / 2).round() - (sy - shellPad) + shellDy;
+      ccx = (((cw - shellW) / 2).round() - (sx - shellPad) + (shellDx * k)).round();
+      ccy = (((ch - shellH) / 2).round() - (sy - shellPad) + (shellDy * k)).round();
     }
 
     final filter = StringBuffer()
@@ -424,6 +437,12 @@ class Composer {
               'trunc(ih*${k.toStringAsFixed(5)}/2)*2:flags=lanczos[cs];')
       ..write('[bgv][cs]overlay=$ccx:$ccy:format=auto,format=rgba[vout]');
 
+
+    _logGeom('图片合成', template, cw, ch, ccx, ccy,
+        inW: contentW0, inH: contentH0, boost: k,
+        shellDx: shellDx, shellDy: shellDy,
+        extra: 'bg=${bgImagePath != null ? 'img' : background} '
+            'ratio=$ratio canvasRatio=$canvasRatio');
     final cmd = [
       '-y',
       '-i', _q(imagePath),
@@ -445,16 +464,43 @@ class Composer {
   }
 
 
+
+  /// 合成几何日志（排查对齐问题用）：模板/输入/画布/壳位置/内容位置
+  static void _logGeom(
+    String tag,
+    ShellTemplate t,
+    int? cw,
+    int? ch,
+    int? ccx,
+    int? ccy, {
+    int? inW,
+    int? inH,
+    double boost = 1.0,
+    double shellDx = 0,
+    double shellDy = 0,
+    String extra = '',
+  }) {
+    final sx = t.screenX, sy = t.screenY, sw = t.screenW, sh = t.screenH;
+    AppLog.i('[$tag] 模板=${t.id} 壳图=${t.caseWidth}x${t.caseHeight} '
+        '屏幕孔 x1=$sx y1=$sy x2=${sx + sw} y2=${sy + sh} w=$sw h=$sh r=${t.cornerR}');
+    AppLog.i('[$tag] 输入=${inW ?? '-'}x${inH ?? '-'} 画布=${cw ?? '-'}x${ch ?? '-'} '
+        'boost=${boost.toStringAsFixed(3)} '
+        '壳位置=(${ccx ?? '-'},${ccy ?? '-'}) '
+        '内容位置=(${(ccx ?? 0) + sx},${(ccy ?? 0) + sy}) 内容尺寸=${sw}x$sh '
+        'shellD=(${shellDx.toStringAsFixed(1)},${shellDy.toStringAsFixed(1)}) $extra');
+  }
+
   /// 内容分辨率保护（视频/实况用）：把模板整体放大到屏幕孔宽 ≈ target，
   /// 否则 4K/1080P 视频会被塞进 450~800 宽的屏幕孔里，导出必然糊。
   static Future<ShellTemplate> boostTemplate(
     ShellTemplate t, {
     double targetScreenW = 1600,
     double maxK = 3.0,
+    double minK = 0.2,
   }) async {
     if (t.screenW <= 0 || t.caseWidth <= 0) return t;
-    final k = (targetScreenW / t.screenW).clamp(1.0, maxK);
-    if (k <= 1.02) return t;
+    final k = (targetScreenW / t.screenW).clamp(minK, maxK);
+    if ((k - 1.0).abs() < 0.02) return t;
     final w = (t.caseWidth * k).round();
     final h = (t.caseHeight * k).round();
     final dir = Directory('${Directory.systemTemp.path}/shell_boost');
@@ -489,6 +535,70 @@ class Composer {
     );
   }
 
+
+
+  /// 纯函数：videoTemplate() 会用到的画布缩放倍率（滑杆位移换算用）
+  static double qFor(ShellTemplate t, [Quality quality = Quality.original]) {
+    if (t.screenW <= 0) return 1.0;
+    final pad = (t.screenW * 0.06).round();
+    final shellW = t.screenW + pad * 2;
+    final shellH = t.screenH + pad * 2;
+    var bw = shellW / 0.7 * 1.1;
+    var bh = shellH / 0.7 * 1.1;
+    const cr = 9 / 16;
+    if (bw / bh > cr) {
+      bh = bw / cr;
+    } else {
+      bw = bh * cr;
+    }
+    final short = math.min(bw, bh);
+    final target = switch (quality) {
+      Quality.original => double.infinity,
+      Quality.p1080 => 1080.0,
+      Quality.p720 => 720.0,
+    };
+    // 原画档：完全不缩放模板（避免壳图二次重采样变软）
+    if (quality == Quality.original) return 1.0;
+    var q = short <= target ? 1.0 : target / short;
+    final d = math.max(bw, bh) * q;
+    if (d > 4096) q = 4096 / math.max(bw, bh);
+    return q;
+  }
+
+  /// 视频 / 实况导出用：按最终画布直出，避免「先合成大画布再缩到 1080p」的双重采样。
+  /// 目标：画布短边 ≈ 1080（不小于就不动），壳占比仍是设计值（ratio 0.7）。
+  static Future<ShellTemplate> videoTemplate(
+    ShellTemplate t, {
+    Quality quality = Quality.original,
+  }) async {
+    if (t.screenW <= 0) return t;
+    final pad = (t.screenW * 0.06).round();
+    final shellW = t.screenW + pad * 2;
+    final shellH = t.screenH + pad * 2;
+    var bw = shellW / 0.7 * 1.1;
+    var bh = shellH / 0.7 * 1.1;
+    const cr = 9 / 16;
+    if (bw / bh > cr) {
+      bh = bw / cr;
+    } else {
+      bw = bh * cr;
+    }
+    final short = math.min(bw, bh);
+    // 按导出设置选档位：原画 = 不缩小；1080P / 720P = 画布短边封顶
+    final target = switch (quality) {
+      Quality.original => double.infinity,
+      Quality.p1080 => 1080.0,
+      Quality.p720 => 720.0,
+    };
+    var q = short <= target ? 1.0 : target / short;
+    // 高度超过 4096 时硬件编码器容易出横线 → 再压一档
+    if (math.max(bw, bh) * q > 4096) q = 4096 / math.max(bw, bh);
+    final targetScreenW = t.screenW * q;
+    lastTemplateQ = q;
+    AppLog.i('[视频模板] 档位=${quality.name} 画布 ${bw.round()}x${bh.round()} q=${q.toStringAsFixed(3)}');
+    return boostTemplate(t, targetScreenW: targetScreenW);
+  }
+
   /// 画布宽高比在横屏要取倒数：横屏模板是竖屏模板逆时针转 90° 得到的，
   /// 竖屏选 9:16 时横屏就应该是 16:9。比例不翻转的话横屏画布会按竖屏比例算
   /// （宽高互换），壳在画布内只占很小一块，和预览对不上。
@@ -503,6 +613,9 @@ class Composer {
   /// 而 mediacodec 是启用的；mpeg4 是 ffmpeg 内置编码器，几乎永远在，作为最后兜底。
   /// `Unknown encoder` 属于立即失败，逐个换掉几乎不耗时。
   /// 最近一次成功导出实际使用的视频编码器（诊断用）
+  /// videoTemplate() 最近一次使用的缩放倍率（滑杆位移换算用）
+  static double lastTemplateQ = 1.0;
+
   static String lastEncoder = '';
 
   /// 最近一次成功导出的完整 ffmpeg 命令（诊断用）
@@ -529,19 +642,27 @@ class Composer {
     final attempts = <List<String>>[
       if (motionPhoto) ...[
         // 硬件 H.264（参数尽量精简，mediacodec 对 -bufsize 等经常报错）
+        // ① 硬件 H.264 + 明确码率/High profile（默认码率极低 → 糊 + 横纹）
+
+        ['-c:v', 'h264_mediacodec', '-b:v', '16M', '-maxrate', '20M',
+
+         '-bufsize', '24M', '-profile:v', 'high'],
+
+        ['-c:v', 'h264_mediacodec', '-b:v', '16M'],
+
         ['-c:v', 'h264_mediacodec'],
         ['-c:v', 'h264_mediacodec', '-b:v', '8M'],
         // 硬件 HEVC（规范允许 HEVC）
         ['-c:v', 'hevc_mediacodec', '-b:v', '8M'],
         // 软编（若该 ffmpeg 构建包含）
-        ['-c:v', 'libx264', '-preset', 'ultrafast', '-crf', '23',
+        ['-c:v', 'libx264', '-preset', 'veryfast', '-crf', '18',
           '-pix_fmt', 'yuv420p'],
         ['-c:v', 'h264', '-pix_fmt', 'yuv420p'],
         ['-c:v', 'openh264', '-pix_fmt', 'yuv420p'],
         // ❌ 不再用 mpeg4 兜底：产出 mp4v 会被酷安/相册判为不合法
       ] else ...[
         if (preferHardware) ['-c:v', 'h264_mediacodec', '-b:v', '10M', '-bufsize', '20M'],
-        ['-c:v', 'libx264', '-preset', 'ultrafast', '-crf', '23', '-pix_fmt', 'yuv420p'],
+        ['-c:v', 'libx264', '-preset', 'veryfast', '-crf', '18', '-pix_fmt', 'yuv420p'],
         ['-c:v', 'mpeg4', '-q:v', '3'],
       ],
     ];
@@ -782,7 +903,7 @@ class Composer {
         '-filter_complex', "'$filter'",
         '-map', '[vout]',
         '-map', '0:a?',
-        '-r', fps.toStringAsFixed(3),
+        '-r', fps.round().toString(),
         '-c:a', 'aac',
         '-b:a', '160k',
         // 裁剪时长（-t 在输入之后 = 限制输出时长）

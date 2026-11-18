@@ -1092,6 +1092,13 @@ class _SettingsSheetState extends State<_SettingsSheet> {
 
           ),
 
+
+          const SizedBox(height: 14),
+          Text(
+            '建议选 1080P + 30 帧：导出速度最快，效果最佳；'
+            '选「原画质 + 原帧率」视频规格过高，导出会明显变慢。',
+            style: TextStyle(fontSize: 11.5, height: 1.55, color: AppColors.textSub),
+          ),
         ],
 
       ),

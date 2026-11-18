@@ -253,6 +253,17 @@ class _LiveTrimScreenState extends State<LiveTrimScreen> {
               decoration: BoxDecoration(
                 color: AppColors.fill,
                 shape: BoxShape.circle,
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: .85),
+                  width: 1.5,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: .06),
+                    blurRadius: 10,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
               ),
               child: Icon(Icons.chevron_left, size: 18, color: AppColors.text),
             ),

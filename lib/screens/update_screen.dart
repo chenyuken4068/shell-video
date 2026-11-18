@@ -215,13 +215,22 @@ class _UpdateScreenState extends State<UpdateScreen> {
     return Scaffold(
       backgroundColor: AppColors.bg,
       extendBodyBehindAppBar: true,
+      // 悬浮底栏：extendBody 让内容从它下方穿过（不占布局空间）
+      extendBody: true,
+      bottomNavigationBar: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(14, 0, 14, 10),
+          child: SizedBox(height: 64, child: _bottomButton()),
+        ),
+      ),
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(safeTop + 64),
         child: _topBar(context),
       ),
       body: Column(
         children: [
-          const SizedBox(height: 8),
+          const SizedBox(height: 0),
           Expanded(
             child: _checking
                 ? Center(
@@ -241,7 +250,13 @@ class _UpdateScreenState extends State<UpdateScreen> {
                     ),
                   )
                 : ListView(
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+                    // 底部留出悬浮底栏的高度 + 余量，最后一张卡片能滚到悬浮底栏上方
+                    padding: EdgeInsets.fromLTRB(
+                      16,
+                      MediaQuery.paddingOf(context).top + 72,
+                      16,
+                      MediaQuery.paddingOf(context).bottom + 104,
+                    ),
                     children: [
                       _hero(),
                       _changelogCard(),
@@ -253,8 +268,6 @@ class _UpdateScreenState extends State<UpdateScreen> {
                     ],
                   ),
           ),
-          // 底部固定主按钮
-          if (!_checking) _bottomButton(),
         ],
       ),
     );
@@ -522,61 +535,54 @@ class _UpdateScreenState extends State<UpdateScreen> {
 
   Widget _bottomButton() {
     final has = _hasUpdate;
-    return SafeArea(
-      top: false,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 6, 16, 18),
-        child: GestureDetector(
-          onTap: has
-              ? () async {
-                  final url = _apkUrl.isNotEmpty
-                      ? proxiedUrl(_apkUrl)
-                      : proxiedUrl(
-                          'https://github.com/chenyuken4068/shell-video/releases/latest');
-                  try {
-                    final ok = await launchUrl(Uri.parse(url),
-                        mode: LaunchMode.externalApplication);
-                    if (!ok && mounted) _toast('无法打开下载链接');
-                  } catch (e) {
-                    if (mounted) _toast('打开链接失败: $e');
-                  }
-                }
-              : _check,
-          child: Container(
-            height: 52,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(26),
-              gradient: has
-                  ? const LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [Color(0xFF4A90FF), Color(0xFF2F6BFF)],
-                    )
-                  : null,
-              color: has ? null : AppColors.card,
-              border: has
-                  ? null
-                  : Border.all(color: const Color(0xFFD7E5FF), width: 1.5),
-              boxShadow: has
-                  ? [
-                      BoxShadow(
-                        color: const Color(0xFF2F6BFF).withValues(alpha: .30),
-                        blurRadius: 24,
-                        offset: const Offset(0, 10),
-                      ),
-                    ]
-                  : null,
-            ),
-            child: Text(
-              has ? '立即更新' : '检查更新',
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w800,
-                color: has ? Colors.white : AppColors.accent,
-              ),
-            ),
+    return GestureDetector(
+      onTap: has
+          ? () async {
+              final url = _apkUrl.isNotEmpty
+                  ? proxiedUrl(_apkUrl)
+                  : proxiedUrl(
+                      'https://github.com/chenyuken4068/shell-video/releases/latest');
+              try {
+                final ok = await launchUrl(Uri.parse(url),
+                    mode: LaunchMode.externalApplication);
+                if (!ok && mounted) _toast('无法打开下载链接');
+              } catch (e) {
+                if (mounted) _toast('打开链接失败: $e');
+              }
+            }
+          : _check,
+      child: Container(
+        height: 64,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(32),
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFF4A90FF), Color(0xFF2F6BFF)],
           ),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF2F6BFF).withValues(alpha: .32),
+              blurRadius: 22,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(has ? Icons.download_rounded : Icons.refresh_rounded,
+                size: 18, color: Colors.white),
+            const SizedBox(width: 8),
+            Text(
+              has ? '下载更新' : '检测更新',
+              style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 15.5,
+                  fontWeight: FontWeight.w800),
+            ),
+          ],
         ),
       ),
     );

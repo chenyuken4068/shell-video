@@ -25,10 +25,8 @@ import '../services/app_settings.dart';
 import '../services/composer.dart';
 
 import '../services/app_log.dart';
-import '../services/hd_templates.dart';
 
 import '../services/longshot_composer.dart';
-import '../services/motion_diag.dart';
 import '../services/motion_photo_exporter.dart';
 
 import '../services/motion_probe.dart';
@@ -106,10 +104,6 @@ class _ComposeScreenState extends State<ComposeScreen>
   // 画布宽高比（0 = 按屏占比自然比例=原尺寸）
   /// 画布比例：默认 9:16（进入即竖屏 9:16）
   double _canvasRatio = 9 / 16;
-
-  /// 自定义画布比例的整数宽高（按钮显示 + 弹窗回填用）
-  int? _customW;
-  int? _customH;
   /// 方向进度：0 = 竖屏，1 = 横屏（竖→横逆时针 90°，横→竖反向播放）
   late final AnimationController _orientCtrl;
   /// 画布比例切换动画：同一个画布尺寸连续插值（无淡入淡出）
@@ -159,12 +153,8 @@ class _ComposeScreenState extends State<ComposeScreen>
     _ratioMax = 1.0;
     _ratio = 0.7;
     _loadDefaults();
-    // 透明模式：预加载背景库（背景图圆卡数据源）
-    if (widget.mode == ComposeMode.transparentVideo ||
-        widget.mode == ComposeMode.transparentImage ||
-        (widget.mode == ComposeMode.live && widget.template.isTransparent)) {
-      loadBgLibrary();
-    }
+    // 无条件加载背景库（调色盘显示已导入的背景图）
+    loadBgLibrary();
     // 自动取色（我的 → 通用设置）：默认用素材首帧当背景 + 模糊
     if (gAutoPickBg.value) {
       bgFromContent = true;
@@ -656,9 +646,8 @@ class _ComposeScreenState extends State<ComposeScreen>
   }
   /// 自定义画布比例（宽 : 高）
   Future<void> _pickCustomRatio() async {
-    // 记住上次自定义，重新打开时回填（否则每次都被重置成 9:16）
-    final wCtrl = TextEditingController(text: '${_customW ?? 9}');
-    final hCtrl = TextEditingController(text: '${_customH ?? 16}');
+    final wCtrl = TextEditingController(text: '9');
+    final hCtrl = TextEditingController(text: '16');
     final r = await showDialog<double>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -700,18 +689,7 @@ class _ComposeScreenState extends State<ComposeScreen>
         ],
       ),
     );
-    if (r != null && mounted) {
-      // 记录整数宽高用于按钮显示（比例值本身由 r 决定）
-      final w = int.tryParse(wCtrl.text.trim()) ?? 0;
-      final h = int.tryParse(hCtrl.text.trim()) ?? 0;
-      setState(() {
-        if (w > 0 && h > 0) {
-          _customW = w;
-          _customH = h;
-        }
-      });
-      _pickCanvasRatio(r);
-    }
+    if (r != null && mounted) _pickCanvasRatio(r);
   }
 
 
@@ -833,6 +811,34 @@ class _ComposeScreenState extends State<ComposeScreen>
               final holeCx = boxW / 2 + offX * ct - offY * st;
               final holeCy = boxH / 2 + offX * st + offY * ct;
               final holeBw = (holeW * ct.abs() + holeH * st.abs()) * k;
+              // ── 预览位置 = 导出公式（ccx/ccy）× 预览缩放 pv ──
+              final padE = (t0.screenW * 0.06).round();
+              final shellWe = t0.screenW + padE * 2;
+              final shellHe = t0.screenH + padE * 2;
+              final cwE = cw0.toDouble();
+              final chE = ch0.toDouble();
+              final pvE = boxW / cwE;
+              final ccxE = ((cwE - shellWe) / 2).round() -
+                  (t0.screenX - padE) +
+                  _shellDx;
+
+              // ── 横屏（旋转 90°）：按旋转后坐标再套一次导出公式 ──
+              final rxE = (t0.caseHeight - (t0.screenY + t0.screenH)).toDouble();
+              final ryE = t0.screenX.toDouble();
+              final rwE = t0.screenH.toDouble();
+              final rhE = t0.screenW.toDouble();
+              final padR = (rwE * 0.06).round();
+              final shellWr = rwE + padR * 2;
+              final shellHr = rhE + padR * 2;
+              final cwR = ch0.toDouble();
+              final chR = cw0.toDouble();
+              final pvR = boxW / cwR;
+              final ccxR = ((cwR - shellWr) / 2).round() - (rxE - padR) + _shellDx;
+              final ccyR = ((chR - shellHr) / 2).round() - (ryE - padR) + _shellDy;
+              final ccyE = ((chE - shellHe) / 2).round() -
+                  (t0.screenY - padE) +
+                  _shellDy;
+
               final holeBh = (holeW * st.abs() + holeH * ct.abs()) * k;
 
           // 同一个画布：尺寸随比例动画连续变化（已删除淡入淡出）
@@ -857,6 +863,92 @@ class _ComposeScreenState extends State<ComposeScreen>
               children: [
                 // 背景（画布，纯色）
                 Positioned.fill(child: _buildBg()),
+                // ── 渲染：竖屏/横屏两端都用绝对像素定位（与导出公式一致，无 Transform 叠加）──
+                if (p < 0.01) ...[
+                  if (content != null)
+                    Positioned(
+                      left: (ccxE + t0.screenX) * pvE,
+                      top: (ccyE + t0.screenY) * pvE,
+                      width: t0.screenW * pvE,
+                      height: t0.screenH * pvE,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(t0.cornerR * s),
+                        child: RotatedBox(
+                          quarterTurns: _contentTurns,
+                          child: Image.file(
+                            File(content),
+                            fit: BoxFit.cover,
+                            cacheWidth: 480,
+                            gaplessPlayback: true,
+                            errorBuilder: (_, _, _) => const SizedBox.shrink(),
+                          ),
+                        ),
+                      ),
+                    ),
+                  Positioned(
+                    left: ccxE * pvE,
+                    top: ccyE * pvE,
+                    width: t0.caseWidth * pvE,
+                    height: t0.caseHeight * pvE,
+                    child: Stack(
+                      children: [
+                        Positioned.fill(
+                          child: _buildCaseImage(
+                              _colorPaths[_colorSelId] ??
+                                  widget.template.casePath),
+                        ),
+                        if (_showGuide)
+                          Positioned.fill(
+                              child: CustomPaint(
+                                  painter: _GuidePainter(t: t0))),
+                      ],
+                    ),
+                  ),
+                ] else if (p > 0.99) ...[
+                  // 横屏：同样用导出公式，只是把模板旋转 90° 后再算
+                  if (content != null)
+                    Positioned(
+                      left: (ccxR + rxE) * pvR,
+                      top: (ccyR + ryE) * pvR,
+                      width: rwE * pvR,
+                      height: rhE * pvR,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(t0.cornerR * pvR),
+                        child: RotatedBox(
+                          quarterTurns: _contentTurns,
+                          child: Image.file(
+                            File(content),
+                            fit: BoxFit.cover,
+                            cacheWidth: 480,
+                            gaplessPlayback: true,
+                            errorBuilder: (_, _, _) => const SizedBox.shrink(),
+                          ),
+                        ),
+                      ),
+                    ),
+                  Positioned(
+                    left: ccxR * pvR,
+                    top: ccyR * pvR,
+                    width: t0.caseHeight * pvR,
+                    height: t0.caseWidth * pvR,
+                    child: RotatedBox(
+                      quarterTurns: 3,
+                      child: Stack(
+                        children: [
+                          Positioned.fill(
+                            child: _buildCaseImage(
+                                _colorPaths[_colorSelId] ??
+                                    widget.template.casePath),
+                          ),
+                          if (_showGuide)
+                            Positioned.fill(
+                                child: CustomPaint(
+                                    painter: _GuidePainter(t: t0))),
+                        ],
+                      ),
+                    ),
+                  ),
+                ] else
                 // 内容层：卡框坐标系里画、永不旋转 → 视频/图片始终正立（= 导出结果：
                 // 壳转、内容不转，横屏时横视频按横屏比例裁切填满屏幕），
                 // 再用 ScreenHoleClipper 裁成当前角度下的屏幕形状
@@ -1183,12 +1275,6 @@ class _ComposeScreenState extends State<ComposeScreen>
       final list = await TemplateStore().load();
       final m = <String, String>{};
       for (final v in _colorVariants) {
-        // 按需下载的高清壳图优先
-        final hd = HdTemplates.casePathOf(v.templateId);
-        if (hd != null) {
-          m[v.templateId] = hd;
-          continue;
-        }
         for (final e in list) {
           if (e.id == v.templateId) m[v.templateId] = e.casePath;
         }
@@ -1208,10 +1294,9 @@ class _ComposeScreenState extends State<ComposeScreen>
     }
     if (path == null) {
       try {
-        path ??= HdTemplates.casePathOf(v.templateId);
         final list = await TemplateStore().load();
         for (final e in list) {
-          if (e.id == v.templateId) path ??= e.casePath;
+          if (e.id == v.templateId) path = e.casePath;
         }
       } catch (_) {}
     }
@@ -1382,11 +1467,10 @@ class _ComposeScreenState extends State<ComposeScreen>
   Widget _buildOrientRatioCard() {
     final portrait = !_landscape;
     // 顺序固定（不随方向变化）
-    // 6 个：3 列 × 2 行（右上角「自定义」）
-    const labels = ['9:16', '3:4', '4:3', '1:1', '16:9', '自定义'];
+    const labels = ['9:16', '3:4', '4:3', '1:1', '16:9', 'A4', 'A4横', '自定义'];
     const ratios = [
       9 / 16, 3 / 4, 4 / 3, 1 / 1,
-      16 / 9, -1.0 /* 自定义 */
+      16 / 9, 1 / 1.414, 1.414 / 1, -1.0 /* 自定义 */
     ];
 
     Widget orientBtn(String label, IconData icon, bool on, VoidCallback tap) {
@@ -1428,30 +1512,20 @@ class _ComposeScreenState extends State<ComposeScreen>
     Widget ratioBtn(int i) {
       // 第 8 个 = 自定义比例
       if (ratios[i] < 0) {
-        final customOn = _customW != null &&
-            _customH != null &&
-            (_canvasRatio - (_customW! / _customH!)).abs() < 1e-6;
-        final label = _customW == null ? '自定义' : '$_customW:$_customH';
         return GestureDetector(
           onTap: _composing ? null : _pickCustomRatio,
           child: Container(
             height: 38,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: customOn ? const Color(0xFFEAF2FF) : const Color(0xFFF2F4F8),
+              color: const Color(0xFFF2F4F8),
               borderRadius: BorderRadius.circular(19),
-              border: Border.all(
-                color: customOn
-                    ? AppColors.accent.withValues(alpha: .42)
-                    : Colors.transparent,
-                width: customOn ? 0.5 : 0,
-              ),
             ),
-            child: Text(label,
+            child: Text(labels[i],
                 style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w800,
-                    color: customOn ? AppColors.accent : AppColors.textSub)),
+                    color: AppColors.textSub)),
           ),
         );
       }
@@ -1525,8 +1599,6 @@ class _ComposeScreenState extends State<ComposeScreen>
               Expanded(
                 child: Column(
                   children: [
-                    // 3 列 × 2 行 = 6 个：9:16 / 3:4 / 4:3
-                    //                   1:1  / 16:9 / 自定义
                     Row(children: [
                       for (var i = 0; i < 3; i++) ...[
                         if (i > 0) const SizedBox(width: 8),
@@ -2180,6 +2252,9 @@ class _ComposeScreenState extends State<ComposeScreen>
         contentQuarterTurns: _contentTurns,
         shellDy: _shellDy,
         template: _activeTemplate,
+        background: bgColor.value == Colors.transparent.value
+            ? 'transparent'
+            : (bgColor.value == Colors.black.value ? 'black' : 'white'),
         imagePath: _imagePath!,
         outputPath: out,
         landscape: _landscape,
@@ -2253,10 +2328,10 @@ class _ComposeScreenState extends State<ComposeScreen>
 
       AppLog.i('导出 shellDx=${_shellDx.toStringAsFixed(1)} shellDy=${_shellDy.toStringAsFixed(1)} ratio=$_ratio template=${_activeTemplate.name}');
       await Composer.composeTransparent(
-        shellDx: _shellDx,
+        shellDx: _shellDx * Composer.qFor(_activeTemplate, _quality),
         contentQuarterTurns: _contentTurns,
-        shellDy: _shellDy,
-        template: await Composer.boostTemplate(_activeTemplate),
+        shellDy: _shellDy * Composer.qFor(_activeTemplate, _quality),
+        template: await Composer.videoTemplate(_activeTemplate, quality: _quality),
         contentPath: content,
         outputPath: out,
         isVideo: isVideo,
@@ -2350,10 +2425,10 @@ class _ComposeScreenState extends State<ComposeScreen>
 
       if (_activeTemplate.isTransparent) {
         await Composer.composeTransparent(
-          shellDx: _shellDx,
+          shellDx: _shellDx * Composer.qFor(_activeTemplate, _quality),
         contentQuarterTurns: _contentTurns,
-          shellDy: _shellDy,
-          template: await Composer.boostTemplate(_activeTemplate),
+          shellDy: _shellDy * Composer.qFor(_activeTemplate, _quality),
+          template: await Composer.videoTemplate(_activeTemplate, quality: _quality),
           contentPath: _videoPath,
           outputPath: out,
           isVideo: true,
@@ -2373,11 +2448,6 @@ class _ComposeScreenState extends State<ComposeScreen>
           hardware: _hardware,
           fpsOverride: _fpsOverride,
           info: _info,
-          trimStartSec: _liveTrim?.startSec ?? 0,
-          trimDurationSec: _liveTrim == null
-              ? 0
-              : (_liveTrim!.endSec - _liveTrim!.startSec),
-          motionPhoto: true,
           onProgress: (pct, speed) {
             if (!mounted) return;
             setState(() {
@@ -2395,10 +2465,10 @@ class _ComposeScreenState extends State<ComposeScreen>
         );
       } else {
         await Composer.composeVideo(
-          shellDx: _shellDx,
+          shellDx: _shellDx * Composer.qFor(_activeTemplate, _quality),
         contentQuarterTurns: _contentTurns,
-          shellDy: _shellDy,
-          template: await Composer.boostTemplate(_activeTemplate),
+          shellDy: _shellDy * Composer.qFor(_activeTemplate, _quality),
+          template: await Composer.videoTemplate(_activeTemplate, quality: _quality),
           videoPath: _videoPath!,
           info: _info!,
           outputPath: out,
@@ -2417,11 +2487,6 @@ class _ComposeScreenState extends State<ComposeScreen>
           fpsOverride: _fpsOverride,
           ratio: _ratio,
           canvasRatio: _canvasRatio,
-          trimStartSec: _liveTrim?.startSec ?? 0,
-          trimDurationSec: _liveTrim == null
-              ? 0
-              : (_liveTrim!.endSec - _liveTrim!.startSec),
-          motionPhoto: true,
           onProgress: (pct, speed) {
             if (!mounted) return;
             setState(() {
@@ -2463,29 +2528,6 @@ class _ComposeScreenState extends State<ComposeScreen>
         coverMs: _liveTrim?.coverMs ?? 0,
       );
 
-      // ── 动图诊断报告（txt）：结构是否符合 Android Motion Photo 1.0 / 酷安要求 ──
-      String diagTxt = '';
-      String diagPath = '';
-      try {
-        diagTxt = await MotionDiag.run(
-          motion,
-          extra: [
-            'App: 壳映 ShellVideo 3.3.4 (build 334)',
-            '设备: ${Platform.operatingSystem} ${Platform.operatingSystemVersion}',
-            '视频编码器: ${Composer.lastEncoder}',
-            'ffmpeg 命令: ${Composer.lastCommand}',
-            '裁剪: ${_liveTrim == null ? "未裁剪" : "${_liveTrim!.startSec.toStringAsFixed(2)}s ~ ${_liveTrim!.endSec.toStringAsFixed(2)}s"}',
-            'ffmpeg 日志:',
-            ..._ffLog,
-          ].join('\n'),
-        );
-        diagPath = p.join(dir, '${stem}_live_诊断报告.txt');
-        await File(diagPath).writeAsString(diagTxt, flush: true);
-        AppLog.i('motion diag -> $diagPath');
-      } catch (e) {
-        AppLog.i('motion diag failed: $e');
-      }
-
       if (!mounted) return;
       setState(() {
         _progress = .97;
@@ -2511,24 +2553,10 @@ class _ComposeScreenState extends State<ComposeScreen>
       setState(() {
         _composing = false;
         _progress = 1;
-        _progressText = diagTxt.contains('结论: 不通过')
-            ? '实况已生成（诊断发现不兼容项）'
-            : '实况照片已生成';
+        _progressText = '实况照片已生成';
         _done = true;
         _donePath = motion;
       });
-      // 诊断报告分享入口（测试反馈用）
-      if (diagPath.isNotEmpty && mounted) {
-        final pass = !diagTxt.contains('结论: 不通过');
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(pass ? '动图诊断：通过 ✓（点右侧可分享 txt）' : '动图诊断：发现不兼容项（点右侧分享 txt）'),
-          duration: const Duration(seconds: 10),
-          action: SnackBarAction(
-            label: '分享报告',
-            onPressed: () => _shareFile(diagPath, '动图诊断报告'),
-          ),
-        ));
-      }
     } catch (e) {
       if (!mounted) return;
       setState(() {
@@ -2563,10 +2591,10 @@ class _ComposeScreenState extends State<ComposeScreen>
 
       AppLog.i('导出 shellDx=${_shellDx.toStringAsFixed(1)} shellDy=${_shellDy.toStringAsFixed(1)} ratio=$_ratio template=${_activeTemplate.name}');
       await Composer.composeVideo(
-        shellDx: _shellDx,
+        shellDx: _shellDx * Composer.qFor(_activeTemplate, _quality),
         contentQuarterTurns: _contentTurns,
-        shellDy: _shellDy,
-        template: await Composer.boostTemplate(_activeTemplate),
+        shellDy: _shellDy * Composer.qFor(_activeTemplate, _quality),
+        template: await Composer.videoTemplate(_activeTemplate, quality: _quality),
         videoPath: _videoPath!,
         info: _info!,
         outputPath: out,

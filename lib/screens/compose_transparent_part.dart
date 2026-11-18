@@ -221,6 +221,21 @@ mixin TransparentPart on State<ComposeScreen> {
         ),
         // 导入的背景图接在调色盘后面继续排
         for (final path in bgLibrary) _libCircle(path),
+        // 临时导入一张背景图（不存库）
+        GestureDetector(
+          onTap: pickBgImage,
+          child: Container(
+            width: 34,
+            height: 34,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: AppColors.fillSoft,
+              shape: BoxShape.circle,
+              border: Border.all(color: AppColors.divider),
+            ),
+            child: Icon(Icons.add, size: 18, color: AppColors.accent),
+          ),
+        ),
       ],
     );
   }
